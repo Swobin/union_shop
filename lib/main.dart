@@ -118,6 +118,18 @@ class HomeScreen extends StatelessWidget {
                             onPressed: placeholderCallbackForButtons,
                             active: false,
                           ),
+                          const SizedBox(width: 24),
+                          HoverUnderlineButton(
+                            label: 'SALE!',
+                            onPressed: placeholderCallbackForButtons,
+                            active: false,
+                          ),
+                          const SizedBox(width: 24),
+                          HoverUnderlineButton(
+                            label: 'About',
+                            onPressed: placeholderCallbackForButtons,
+                            active: false,
+                          ),
                           const Spacer(),
                           ConstrainedBox(
                             constraints: const BoxConstraints(maxWidth: 600),
