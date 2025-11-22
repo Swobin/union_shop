@@ -101,19 +101,9 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           const Spacer(),
-                          TextButton(
+                          HoverUnderlineButton(
+                            label: 'HOME',
                             onPressed: () => navigateToHome(context),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                              foregroundColor: Colors.black,
-                              textStyle: const TextStyle(
-                                fontFamily: 'Roboto',
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal, // was bold
-                                letterSpacing: 1,
-                              ),
-                            ),
-                            child: const Text('HOME'),
                           ),
                           const Spacer(),
                           ConstrainedBox(
@@ -357,6 +347,50 @@ class ProductCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class HoverUnderlineButton extends StatefulWidget {
+  final String label;
+  final VoidCallback onPressed;
+  const HoverUnderlineButton({super.key, required this.label, required this.onPressed});
+
+  @override
+  State<HoverUnderlineButton> createState() => _HoverUnderlineButtonState();
+}
+
+class _HoverUnderlineButtonState extends State<HoverUnderlineButton> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final underlineColor = _hovering ? const Color(0xFF4d2963) : Colors.transparent;
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: GestureDetector(
+        onTap: widget.onPressed,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: underlineColor, width: 2),
+            ),
+          ),
+          child: Text(
+            widget.label,
+            style: const TextStyle(
+              fontFamily: 'Roboto',
+              fontSize: 16,
+              fontWeight: FontWeight.normal,
+              letterSpacing: 1,
+              color: Colors.black,
+            ),
+          ),
+        ),
       ),
     );
   }
