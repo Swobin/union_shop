@@ -102,15 +102,21 @@ class HomeScreen extends StatelessWidget {
                           ),
                           const Spacer(),
                           HoverUnderlineButton(
-                            label: 'HOME',
+                            label: 'Home',
                             onPressed: () => navigateToHome(context),
                             active: true,
                           ),
                           const SizedBox(width: 24),
                           HoverUnderlineButton(
-                            label: 'SHOP',
+                            label: 'Shop',
                             onPressed: () => navigateToProduct(context),
-                            active: false, // set true on Product page
+                            active: false,
+                          ),
+                          const SizedBox(width: 24),
+                          HoverUnderlineButton(
+                            label: 'The Print Shack',
+                            onPressed: placeholderCallbackForButtons,
+                            active: false,
                           ),
                           const Spacer(),
                           ConstrainedBox(
