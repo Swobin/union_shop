@@ -104,7 +104,13 @@ class HomeScreen extends StatelessWidget {
                           HoverUnderlineButton(
                             label: 'HOME',
                             onPressed: () => navigateToHome(context),
-                            active: true, // underline persists on Home
+                            active: true,
+                          ),
+                          const SizedBox(width: 24),
+                          HoverUnderlineButton(
+                            label: 'SHOP',
+                            onPressed: () => navigateToProduct(context),
+                            active: false, // set true on Product page
                           ),
                           const Spacer(),
                           ConstrainedBox(
