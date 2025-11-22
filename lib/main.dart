@@ -75,16 +75,17 @@ class HomeScreen extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 24), // was 10
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           GestureDetector(
                             onTap: () {
                               navigateToHome(context);
                             },
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0), // new inner padding
+                              padding: const EdgeInsets.all(8.0),
                               child: Image.network(
                                 'https://shop.upsu.net/cdn/shop/files/upsu_300x300.png?v=1614735854',
-                                height: 56, // reduced from 64
+                                height: 56,
                                 fit: BoxFit.contain,
                                 errorBuilder: (context, error, stackTrace) {
                                   return Container(
@@ -100,61 +101,48 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           const Spacer(),
+                          TextButton(
+                            onPressed: () => navigateToHome(context),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                              foregroundColor: Colors.black,
+                              textStyle: const TextStyle(
+                                fontFamily: 'Roboto',
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal, // was bold
+                                letterSpacing: 1,
+                              ),
+                            ),
+                            child: const Text('HOME'),
+                          ),
+                          const Spacer(),
                           ConstrainedBox(
                             constraints: const BoxConstraints(maxWidth: 600),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  icon: const Icon(
-                                    Icons.search,
-                                    size: 18,
-                                    color: Colors.grey,
-                                  ),
+                                  icon: const Icon(Icons.search, size: 18, color: Colors.grey),
                                   padding: const EdgeInsets.all(8),
-                                  constraints: const BoxConstraints(
-                                    minWidth: 32,
-                                    minHeight: 32,
-                                  ),
+                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                                   onPressed: placeholderCallbackForButtons,
                                 ),
                                 IconButton(
-                                  icon: const Icon(
-                                    Icons.person_outline,
-                                    size: 18,
-                                    color: Colors.grey,
-                                  ),
+                                  icon: const Icon(Icons.person_outline, size: 18, color: Colors.grey),
                                   padding: const EdgeInsets.all(8),
-                                  constraints: const BoxConstraints(
-                                    minWidth: 32,
-                                    minHeight: 32,
-                                  ),
+                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                                   onPressed: placeholderCallbackForButtons,
                                 ),
                                 IconButton(
-                                  icon: const Icon(
-                                    Icons.shopping_bag_outlined,
-                                    size: 18,
-                                    color: Colors.grey,
-                                  ),
+                                  icon: const Icon(Icons.shopping_bag_outlined, size: 18, color: Colors.grey),
                                   padding: const EdgeInsets.all(8),
-                                  constraints: const BoxConstraints(
-                                    minWidth: 32,
-                                    minHeight: 32,
-                                  ),
+                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                                   onPressed: placeholderCallbackForButtons,
                                 ),
                                 IconButton(
-                                  icon: const Icon(
-                                    Icons.menu,
-                                    size: 18,
-                                    color: Colors.grey,
-                                  ),
+                                  icon: const Icon(Icons.menu, size: 18, color: Colors.grey),
                                   padding: const EdgeInsets.all(8),
-                                  constraints: const BoxConstraints(
-                                    minWidth: 32,
-                                    minHeight: 32,
-                                  ),
+                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                                   onPressed: placeholderCallbackForButtons,
                                 ),
                               ],
