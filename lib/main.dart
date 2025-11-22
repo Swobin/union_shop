@@ -50,7 +50,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             // Header
             Container(
-              height: 100,
+              height: 120, // increased from 100
               color: Colors.white,
               child: Column(
                 children: [
@@ -65,7 +65,7 @@ class HomeScreen extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: 'Roboto',
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 17,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -73,28 +73,30 @@ class HomeScreen extends StatelessWidget {
                   // Main header
                   Expanded(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 24), // was 10
                       child: Row(
                         children: [
                           GestureDetector(
                             onTap: () {
                               navigateToHome(context);
                             },
-                            child: Image.network(
-                              'https://shop.upsu.net/cdn/shop/files/upsu_300x300.png?v=1614735854',
-                              height: 18,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: Colors.grey[300],
-                                  width: 18,
-                                  height: 18,
-                                  child: const Center(
-                                    child: Icon(Icons.image_not_supported,
-                                        color: Colors.grey),
-                                  ),
-                                );
-                              },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0), // new inner padding
+                              child: Image.network(
+                                'https://shop.upsu.net/cdn/shop/files/upsu_300x300.png?v=1614735854',
+                                height: 56, // reduced from 64
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.grey[300],
+                                    width: 56,
+                                    height: 56,
+                                    child: const Center(
+                                      child: Icon(Icons.image_not_supported, color: Colors.grey),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           ),
                           const Spacer(),
