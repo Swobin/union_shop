@@ -104,6 +104,7 @@ class HomeScreen extends StatelessWidget {
                           HoverUnderlineButton(
                             label: 'HOME',
                             onPressed: () => navigateToHome(context),
+                            active: true, // underline persists on Home
                           ),
                           const Spacer(),
                           ConstrainedBox(
@@ -355,7 +356,14 @@ class ProductCard extends StatelessWidget {
 class HoverUnderlineButton extends StatefulWidget {
   final String label;
   final VoidCallback onPressed;
-  const HoverUnderlineButton({super.key, required this.label, required this.onPressed});
+  final bool active; // new
+
+  const HoverUnderlineButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.active = false,
+  });
 
   @override
   State<HoverUnderlineButton> createState() => _HoverUnderlineButtonState();
@@ -366,7 +374,8 @@ class _HoverUnderlineButtonState extends State<HoverUnderlineButton> {
 
   @override
   Widget build(BuildContext context) {
-    final underlineColor = _hovering ? const Color(0xFF4d2963) : Colors.transparent;
+    final bool showUnderline = _hovering || widget.active;
+    final underlineColor = showUnderline ? const Color(0xFF4d2963) : Colors.transparent;
     return MouseRegion(
       onEnter: (_) => setState(() => _hovering = true),
       onExit: (_) => setState(() => _hovering = false),
