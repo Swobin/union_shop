@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/product_page.dart';
+import 'package:union_shop/about_page.dart';
 
 void main() {
   runApp(const UnionShopApp());
@@ -18,11 +19,11 @@ class UnionShopApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4d2963)),
       ),
       home: const HomeScreen(),
-      // By default, the app starts at the '/' route, which is the HomeScreen
       initialRoute: '/',
-      // When navigating to '/product', build and return the ProductPage
-      // In your browser, try this link: http://localhost:49856/#/product
-      routes: {'/product': (context) => const ProductPage()},
+      routes: {
+        '/product': (context) => const ProductPage(),
+        '/about': (context) => const AboutPage(),
+      },
     );
   }
 }
@@ -127,7 +128,7 @@ class HomeScreen extends StatelessWidget {
                           const SizedBox(width: 16), // was 24
                           HoverUnderlineButton(
                             label: 'About',
-                            onPressed: placeholderCallbackForButtons,
+                            onPressed: () => Navigator.pushNamed(context, '/about'),
                             active: false,
                           ),
                           const Spacer(),
@@ -375,8 +376,7 @@ class HomeScreen extends StatelessWidget {
                     GridView.count(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      crossAxisCount:
-                          MediaQuery.of(context).size.width > 600 ? 2 : 1,
+                      crossAxisCount: MediaQuery.of(context).size.width > 600 ? 2 : 1,
                       crossAxisSpacing: 24,
                       mainAxisSpacing: 48,
                       children: const [
@@ -569,103 +569,102 @@ class _HoverUnderlineImageTileState extends State<HoverUnderlineImageTile> {
         : NetworkImage(widget.imageUrl) as ImageProvider<Object>;
 
     return MouseRegion(
-      onEnter: (_) => setState(() => _hovering = true),
-      onExit: (_) => setState(() => _hovering = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AspectRatio(
-              aspectRatio: 16 / 9,
-              // Use a Stack: static Image + animated overlay for brightness (no AnimatedContainer on decoration)
-              child: ClipRect(
-                child: Stack(
-                  fit: StackFit.expand,
+        onEnter: (_) => setState(() => _hovering = true),
+        onExit: (_) => setState(() => _hovering = false),
+        child: GestureDetector(
+          onTap: widget.onTap,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                // Use a Stack: static Image + animated overlay for brightness (no AnimatedContainer on decoration)
+                child: ClipRect(
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image(
+                        image: imageProvider,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey[200],
+                            child: const Center(
+                              child: Icon(Icons.image_not_supported, color: Colors.grey),
+                            ),
+                          );
+                        },
+                      ),
+                      // Brighten overlay on hover using AnimatedOpacity (smooth, doesn't rebuild image)
+                      AnimatedOpacity(
+                        duration: const Duration(milliseconds: 150),
+                        opacity: _hovering ? 0.18 : 0.0,
+                        child: Container(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: underlineColor, width: 2),
+                  ),
+                ),
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(
+                  widget.label,
+                  style: const TextStyle(
+                    fontFamily: 'Roboto',
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
+                    letterSpacing: 0.8,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              // Price rendering: supports (old + new) or single price (newPrice)
+              if (widget.newPrice != null && widget.oldPrice != null) ...[
+                const SizedBox(height: 6),
+                Row(
                   children: [
-                    Image(
-                      image: imageProvider,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey[200],
-                          child: const Center(
-                            child: Icon(Icons.image_not_supported, color: Colors.grey),
-                          ),
-                        );
-                      },
+                    Text(
+                      widget.oldPrice!,
+                      style: const TextStyle(
+                        fontFamily: 'Roboto',
+                        fontSize: 15,
+                        color: Colors.grey,
+                        decoration: TextDecoration.lineThrough,
+                      ),
                     ),
-                    // Brighten overlay on hover using AnimatedOpacity (smooth, doesn't rebuild image)
-                    AnimatedOpacity(
-                      duration: const Duration(milliseconds: 150),
-                      opacity: _hovering ? 0.18 : 0.0,
-                      child: Container(color: Colors.white),
+                    const SizedBox(width: 8),
+                    Text(
+                      widget.newPrice!,
+                      style: const TextStyle(
+                        fontFamily: 'Roboto',
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF4d2963),
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: underlineColor, width: 2),
-                ),
-              ),
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text(
-                widget.label,
-                style: const TextStyle(
-                  fontFamily: 'Roboto',
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                  letterSpacing: 0.8,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            // Price rendering: supports (old + new) or single price (newPrice)
-            if (widget.newPrice != null && widget.oldPrice != null) ...[
-              const SizedBox(height: 6),
-              Row(
-                children: [
-                  Text(
-                    widget.oldPrice!,
-                    style: const TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 15,
-                      color: Colors.grey,
-                      decoration: TextDecoration.lineThrough,
-                    ),
+              ] else if (widget.newPrice != null) ...[
+                const SizedBox(height: 6),
+                Text(
+                  widget.newPrice!,
+                  style: const TextStyle(
+                    fontFamily: 'Roboto',
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF4d2963),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    widget.newPrice!,
-                    style: const TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4d2963),
-                    ),
-                  ),
-                ],
-              ),
-            ] else if (widget.newPrice != null) ...[
-              const SizedBox(height: 6),
-              Text(
-                widget.newPrice!,
-                style: const TextStyle(
-                  fontFamily: 'Roboto',
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF4d2963),
                 ),
-              ),
+              ],
             ],
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }
