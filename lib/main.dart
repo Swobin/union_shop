@@ -254,11 +254,61 @@ class HomeScreen extends StatelessWidget {
                     const Text(
                       'ESSENTIAL RANGE - OVER 20% OFF!',
                       style: TextStyle(
-                        fontSize: 22, // was 20
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                         letterSpacing: 1,
                       ),
+                    ),
+                    const SizedBox(height: 24),
+                    // New two clickable pictures row
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isWide = constraints.maxWidth > 640;
+                        return isWide
+                            ? Row(
+                                children: [
+                                  Expanded(
+                                    child: HoverUnderlineImageTile(
+                                      label: 'Limited Edition Essential Zip Hoodies',
+                                      imageUrl:
+                                          'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
+                                      oldPrice: '£20.00',
+                                      newPrice: '£14.99',
+                                      onTap: () => Navigator.pushNamed(context, '/product'),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 32),
+                                  Expanded(
+                                    child: HoverUnderlineImageTile(
+                                      label: 'Essential T-Shirt',
+                                      imageUrl:
+                                          'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+                                      oldPrice: '£10.00',
+                                      newPrice: '£6.99',
+                                      onTap: () => Navigator.pushNamed(context, '/product'),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  HoverUnderlineImageTile(
+                                    label: 'Limited Edition Essential Zip Hoodies',
+                                    imageUrl:
+                                        'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
+                                    onTap: () => Navigator.pushNamed(context, '/product'),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  HoverUnderlineImageTile(
+                                    label: 'Essential T-Shirt',
+                                    imageUrl:
+                                        'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+                                    onTap: () => Navigator.pushNamed(context, '/product'),
+                                  ),
+                                ],
+                              );
+                      },
                     ),
                     const SizedBox(height: 48),
                     GridView.count(
@@ -424,6 +474,111 @@ class _HoverUnderlineButtonState extends State<HoverUnderlineButton> {
               color: Colors.black,
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class HoverUnderlineImageTile extends StatefulWidget {
+  final String label;
+  final String imageUrl;
+  final VoidCallback onTap;
+  final String? oldPrice;
+  final String? newPrice;
+  const HoverUnderlineImageTile({
+    super.key,
+    required this.label,
+    required this.imageUrl,
+    required this.onTap,
+    this.oldPrice,
+    this.newPrice,
+  });
+
+  @override
+  State<HoverUnderlineImageTile> createState() => _HoverUnderlineImageTileState();
+}
+
+class _HoverUnderlineImageTileState extends State<HoverUnderlineImageTile> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final underlineColor = (_hovering) ? const Color(0xFF4d2963) : Colors.transparent;
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  image: DecorationImage(
+                    image: NetworkImage(widget.imageUrl),
+                    fit: BoxFit.cover,
+                    colorFilter: _hovering
+                        ? ColorFilter.mode(
+                            Colors.white.withOpacity(0.25),
+                            BlendMode.srcATop,
+                          )
+                        : null,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: underlineColor, width: 2),
+                ),
+              ),
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text(
+                widget.label,
+                style: const TextStyle(
+                  fontFamily: 'Roboto',
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                  letterSpacing: 0.8,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            if (widget.newPrice != null && widget.oldPrice != null) ...[
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Text(
+                    widget.oldPrice!,
+                    style: const TextStyle(
+                      fontFamily: 'Roboto',
+                      fontSize: 15,
+                      color: Colors.grey,
+                      decoration: TextDecoration.lineThrough,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    widget.newPrice!,
+                    style: const TextStyle(
+                      fontFamily: 'Roboto',
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4d2963),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
         ),
       ),
     );
