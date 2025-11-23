@@ -106,25 +106,25 @@ class HomeScreen extends StatelessWidget {
                             onPressed: () => navigateToHome(context),
                             active: true,
                           ),
-                          const SizedBox(width: 24),
+                          const SizedBox(width: 16), // was 24
                           HoverUnderlineButton(
                             label: 'Shop',
                             onPressed: () => navigateToProduct(context),
                             active: false,
                           ),
-                          const SizedBox(width: 24),
+                          const SizedBox(width: 16), // was 24
                           HoverUnderlineButton(
                             label: 'The Print Shack',
                             onPressed: placeholderCallbackForButtons,
                             active: false,
                           ),
-                          const SizedBox(width: 24),
+                          const SizedBox(width: 16), // was 24
                           HoverUnderlineButton(
                             label: 'SALE!',
                             onPressed: placeholderCallbackForButtons,
                             active: false,
                           ),
-                          const SizedBox(width: 24),
+                          const SizedBox(width: 16), // was 24
                           HoverUnderlineButton(
                             label: 'About',
                             onPressed: placeholderCallbackForButtons,
@@ -252,9 +252,10 @@ class HomeScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     const Text(
-                      'PRODUCTS SECTION',
+                      'ESSENTIAL RANGE - OVER 20% OFF!',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 22, // was 20
+                        fontWeight: FontWeight.bold,
                         color: Colors.black,
                         letterSpacing: 1,
                       ),
@@ -407,7 +408,7 @@ class _HoverUnderlineButtonState extends State<HoverUnderlineButton> {
         onTap: widget.onPressed,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // reduced (was 24,12)
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(color: underlineColor, width: 2),
@@ -417,9 +418,9 @@ class _HoverUnderlineButtonState extends State<HoverUnderlineButton> {
             widget.label,
             style: const TextStyle(
               fontFamily: 'Roboto',
-              fontSize: 16,
+              fontSize: 14, // was 16
               fontWeight: FontWeight.normal,
-              letterSpacing: 1,
+              letterSpacing: 0.8, // slight reduction
               color: Colors.black,
             ),
           ),
