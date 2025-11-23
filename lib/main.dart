@@ -281,7 +281,8 @@ class HomeScreen extends StatelessWidget {
                                   Expanded(
                                     child: HoverUnderlineImageTile(
                                       label: 'Essential T-Shirt',
-                                      imageUrl: 'assets/images/zip_up_hoodie.png', // <-- updated (temporary)
+                                      imageUrl:
+                                          'assets/images/limited_t_shirt.png', // <-- changed to limited_t_shirt.png
                                       oldPrice: '£10.00',
                                       newPrice: '£6.99',
                                       onTap: () => Navigator.pushNamed(context, '/product'),
@@ -301,7 +302,7 @@ class HomeScreen extends StatelessWidget {
                                   const SizedBox(height: 24),
                                   HoverUnderlineImageTile(
                                     label: 'Essential T-Shirt',
-                                    imageUrl: 'assets/images/zip_up_hoodie.png',
+                                    imageUrl: 'assets/images/limited_t_shirt.png', // <-- changed to limited_t_shirt.png
                                     oldPrice: '£10.00',
                                     newPrice: '£6.99',
                                     onTap: () => Navigator.pushNamed(context, '/product'),
@@ -343,7 +344,7 @@ class HomeScreen extends StatelessWidget {
                                     child: HoverUnderlineImageTile(
                                       label: 'Signature T-Shirt',
                                       imageUrl:
-                                          'assets/images/zip_up_hoodie.png', // changed from limited_zip_hoodie.jpg
+                                          'assets/images/signature_t_shirt.png', // <-- changed to signature_t_shirt.png
                                       newPrice: '£14.99', // added price (no discount)
                                       onTap: () => Navigator.pushNamed(context, '/product'),
                                     ),
@@ -361,7 +362,8 @@ class HomeScreen extends StatelessWidget {
                                   const SizedBox(height: 24),
                                   HoverUnderlineImageTile(
                                     label: 'Signature T-Shirt',
-                                    imageUrl: 'assets/images/zip_up_hoodie.png',
+                                    imageUrl:
+                                        'assets/images/signature_t_shirt.png', // <-- changed to signature_t_shirt.png
                                     newPrice: '£14.99',
                                     onTap: () => Navigator.pushNamed(context, '/product'),
                                   ),
@@ -576,20 +578,30 @@ class _HoverUnderlineImageTileState extends State<HoverUnderlineImageTile> {
           children: [
             AspectRatio(
               aspectRatio: 16 / 9,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  image: DecorationImage(
-                    image: imageProvider, // <-- use selected provider
-                    fit: BoxFit.cover,
-                    colorFilter: _hovering
-                        ? ColorFilter.mode(
-                            Colors.white.withOpacity(0.25),
-                            BlendMode.srcATop,
-                          )
-                        : null,
-                  ),
+              // Use a Stack: static Image + animated overlay for brightness (no AnimatedContainer on decoration)
+              child: ClipRect(
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[200],
+                          child: const Center(
+                            child: Icon(Icons.image_not_supported, color: Colors.grey),
+                          ),
+                        );
+                      },
+                    ),
+                    // Brighten overlay on hover using AnimatedOpacity (smooth, doesn't rebuild image)
+                    AnimatedOpacity(
+                      duration: const Duration(milliseconds: 150),
+                      opacity: _hovering ? 0.18 : 0.0,
+                      child: Container(color: Colors.white),
+                    ),
+                  ],
                 ),
               ),
             ),
