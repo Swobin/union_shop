@@ -85,13 +85,13 @@ class HomeScreen extends StatelessWidget {
                               padding: const EdgeInsets.all(8.0),
                               child: Image.network(
                                 'https://shop.upsu.net/cdn/shop/files/upsu_300x300.png?v=1614735854',
-                                height: 56,
-                                fit: BoxFit.contain,
+                                height: 44, // slightly smaller
+                                fit: BoxFit.contain, // preserves aspect ratio
                                 errorBuilder: (context, error, stackTrace) {
                                   return Container(
                                     color: Colors.grey[300],
-                                    width: 56,
-                                    height: 56,
+                                    width: 44,
+                                    height: 44,
                                     child: const Center(
                                       child: Icon(Icons.image_not_supported, color: Colors.grey),
                                     ),
@@ -182,8 +182,8 @@ class HomeScreen extends StatelessWidget {
                     child: Container(
                       decoration: const BoxDecoration(
                         image: DecorationImage(
-                          image: NetworkImage(
-                            'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
+                          image: AssetImage(
+                            'assets/images/zip_up_hoodie.png', // changed from limited_zip_hoodie.jpg
                           ),
                           fit: BoxFit.cover,
                         ),
@@ -271,8 +271,7 @@ class HomeScreen extends StatelessWidget {
                                   Expanded(
                                     child: HoverUnderlineImageTile(
                                       label: 'Limited Edition Essential Zip Hoodies',
-                                      imageUrl:
-                                          'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
+                                      imageUrl: 'assets/images/zip_up_hoodie.png', // <-- updated
                                       oldPrice: '£20.00',
                                       newPrice: '£14.99',
                                       onTap: () => Navigator.pushNamed(context, '/product'),
@@ -282,8 +281,7 @@ class HomeScreen extends StatelessWidget {
                                   Expanded(
                                     child: HoverUnderlineImageTile(
                                       label: 'Essential T-Shirt',
-                                      imageUrl:
-                                          'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+                                      imageUrl: 'assets/images/zip_up_hoodie.png', // <-- updated (temporary)
                                       oldPrice: '£10.00',
                                       newPrice: '£6.99',
                                       onTap: () => Navigator.pushNamed(context, '/product'),
@@ -295,15 +293,76 @@ class HomeScreen extends StatelessWidget {
                                 children: [
                                   HoverUnderlineImageTile(
                                     label: 'Limited Edition Essential Zip Hoodies',
-                                    imageUrl:
-                                        'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
+                                    imageUrl: 'assets/images/zip_up_hoodie.png', // <-- updated
+                                    oldPrice: '£20.00',
+                                    newPrice: '£14.99',
                                     onTap: () => Navigator.pushNamed(context, '/product'),
                                   ),
                                   const SizedBox(height: 24),
                                   HoverUnderlineImageTile(
                                     label: 'Essential T-Shirt',
-                                    imageUrl:
-                                        'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+                                    imageUrl: 'assets/images/zip_up_hoodie.png',
+                                    oldPrice: '£10.00',
+                                    newPrice: '£6.99',
+                                    onTap: () => Navigator.pushNamed(context, '/product'),
+                                  ),
+                                ],
+                              );
+                      },
+                    ),
+
+                    // Signature Range title + two clickable pictures
+                    const SizedBox(height: 32),
+                    const Text(
+                      'Signature Range',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isWide = constraints.maxWidth > 640;
+                        return isWide
+                            ? Row(
+                                children: [
+                                  Expanded(
+                                    child: HoverUnderlineImageTile(
+                                      label: 'Signature Hoodie',
+                                      imageUrl:
+                                          'assets/images/zip_up_hoodie.png', // changed from limited_zip_hoodie.jpg
+                                      newPrice: '£32.99', // added price (no discount)
+                                      onTap: () => Navigator.pushNamed(context, '/product'),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 32),
+                                  Expanded(
+                                    child: HoverUnderlineImageTile(
+                                      label: 'Signature T-Shirt',
+                                      imageUrl:
+                                          'assets/images/zip_up_hoodie.png', // changed from limited_zip_hoodie.jpg
+                                      newPrice: '£14.99', // added price (no discount)
+                                      onTap: () => Navigator.pushNamed(context, '/product'),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  HoverUnderlineImageTile(
+                                    label: 'Signature Hoodie',
+                                    imageUrl: 'assets/images/zip_up_hoodie.png',
+                                    newPrice: '£32.99',
+                                    onTap: () => Navigator.pushNamed(context, '/product'),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  HoverUnderlineImageTile(
+                                    label: 'Signature T-Shirt',
+                                    imageUrl: 'assets/images/zip_up_hoodie.png',
+                                    newPrice: '£14.99',
                                     onTap: () => Navigator.pushNamed(context, '/product'),
                                   ),
                                 ],
@@ -322,26 +381,22 @@ class HomeScreen extends StatelessWidget {
                         ProductCard(
                           title: 'Placeholder Product 1',
                           price: '£10.00',
-                          imageUrl:
-                              'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+                          imageUrl: 'assets/images/zip_up_hoodie.png', // <-- updated
                         ),
                         ProductCard(
                           title: 'Placeholder Product 2',
                           price: '£15.00',
-                          imageUrl:
-                              'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+                          imageUrl: 'assets/images/zip_up_hoodie.png', // <-- updated
                         ),
                         ProductCard(
                           title: 'Placeholder Product 3',
                           price: '£20.00',
-                          imageUrl:
-                              'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+                          imageUrl: 'assets/images/zip_up_hoodie.png', // <-- updated
                         ),
                         ProductCard(
                           title: 'Placeholder Product 4',
                           price: '£25.00',
-                          imageUrl:
-                              'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+                          imageUrl: 'assets/images/zip_up_hoodie.png', // <-- updated
                         ),
                       ],
                     ),
@@ -393,7 +448,7 @@ class ProductCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: Image.network(
+            child: Image.asset(
               imageUrl,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
@@ -505,6 +560,12 @@ class _HoverUnderlineImageTileState extends State<HoverUnderlineImageTile> {
   @override
   Widget build(BuildContext context) {
     final underlineColor = (_hovering) ? const Color(0xFF4d2963) : Colors.transparent;
+
+    // choose AssetImage for local assets, NetworkImage otherwise
+    final ImageProvider<Object> imageProvider = widget.imageUrl.startsWith('assets/')
+        ? AssetImage(widget.imageUrl) as ImageProvider<Object>
+        : NetworkImage(widget.imageUrl) as ImageProvider<Object>;
+
     return MouseRegion(
       onEnter: (_) => setState(() => _hovering = true),
       onExit: (_) => setState(() => _hovering = false),
@@ -520,7 +581,7 @@ class _HoverUnderlineImageTileState extends State<HoverUnderlineImageTile> {
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
                   image: DecorationImage(
-                    image: NetworkImage(widget.imageUrl),
+                    image: imageProvider, // <-- use selected provider
                     fit: BoxFit.cover,
                     colorFilter: _hovering
                         ? ColorFilter.mode(
@@ -552,6 +613,7 @@ class _HoverUnderlineImageTileState extends State<HoverUnderlineImageTile> {
                 ),
               ),
             ),
+            // Price rendering: supports (old + new) or single price (newPrice)
             if (widget.newPrice != null && widget.oldPrice != null) ...[
               const SizedBox(height: 6),
               Row(
@@ -576,6 +638,17 @@ class _HoverUnderlineImageTileState extends State<HoverUnderlineImageTile> {
                     ),
                   ),
                 ],
+              ),
+            ] else if (widget.newPrice != null) ...[
+              const SizedBox(height: 6),
+              Text(
+                widget.newPrice!,
+                style: const TextStyle(
+                  fontFamily: 'Roboto',
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4d2963),
+                ),
               ),
             ],
           ],
