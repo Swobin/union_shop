@@ -31,6 +31,50 @@ class UnionShopApp extends StatelessWidget {
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  // show a popup menu positioned under the Shop button (no new route)
+  void showShopCategories(BuildContext context, BuildContext buttonContext) {
+    final categories = <String>[
+      'Clothing',
+      'Merchandise',
+      'Halloween',
+      'Signature & Essential Range',
+      'Portsmouth City Collection',
+      'Pride Collection',
+      'Graduation',
+    ];
+
+    // compute a RelativeRect that starts just below the Shop button so the menu does not cover it
+    final RenderBox button = buttonContext.findRenderObject() as RenderBox;
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    final Offset buttonTopLeft = button.localToGlobal(Offset.zero, ancestor: overlay);
+    final Offset buttonBottomLeft = button.localToGlobal(Offset(0, button.size.height), ancestor: overlay);
+
+    final double gap = 6.0; // small gap so the menu doesn't touch the button
+    final double left = buttonTopLeft.dx;
+    final double top = buttonBottomLeft.dy + gap;
+    final double right = overlay.size.width - (left + button.size.width);
+    final double bottom = overlay.size.height - top;
+
+    final RelativeRect position = RelativeRect.fromLTRB(left, top, right, bottom);
+
+    showMenu<String>(
+      context: context,
+      position: position,
+      items: categories.map((c) {
+        return PopupMenuItem<String>(
+          value: c,
+          // Removed the trailing chevron so only the label shows
+          child: Text(c, style: const TextStyle(fontFamily: 'Roboto')),
+        );
+      }).toList(),
+    ).then((selected) {
+      if (selected != null) {
+        // currently just close the menu. Add navigation/filtering here later.
+      }
+    });
+  }
+
   void navigateToHome(BuildContext context) {
     Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
   }
@@ -105,17 +149,21 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           const Spacer(),
+                          // Center navigation buttons
                           HoverUnderlineButton(
                             label: 'Home',
                             onPressed: () => navigateToHome(context),
                             active: true,
                           ),
                           const SizedBox(width: 16), // was 24
-                          HoverUnderlineButton(
-                            label: 'Shop',
-                            onPressed: () => navigateToProduct(context),
-                            active: false,
-                          ),
+                          // Shop button shows a popup menu anchored under the button
+                          Builder(builder: (buttonContext) {
+                            return HoverUnderlineButton(
+                              label: 'Shop ▾', // small down-caret to indicate dropdown
+                              onPressed: () => showShopCategories(context, buttonContext),
+                              active: false,
+                            );
+                          }),
                           const SizedBox(width: 16), // was 24
                           HoverUnderlineButton(
                             label: 'The Print Shack',
