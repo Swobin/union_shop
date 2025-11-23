@@ -75,6 +75,43 @@ class HomeScreen extends StatelessWidget {
     });
   }
 
+  // show a popup menu positioned under The Print Shack button
+  void showPrintShackMenu(BuildContext context, BuildContext buttonContext) {
+    final items = <String>['About', 'Personalisation'];
+
+    final RenderBox button = buttonContext.findRenderObject() as RenderBox;
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    final Offset buttonTopLeft = button.localToGlobal(Offset.zero, ancestor: overlay);
+    final Offset buttonBottomLeft = button.localToGlobal(Offset(0, button.size.height), ancestor: overlay);
+
+    const double gap = 6.0;
+    final double left = buttonTopLeft.dx;
+    final double top = buttonBottomLeft.dy + gap;
+    final double right = overlay.size.width - (left + button.size.width);
+    final double bottom = overlay.size.height - top;
+
+    final RelativeRect position = RelativeRect.fromLTRB(left, top, right, bottom);
+
+    showMenu<String>(
+      context: context,
+      position: position,
+      items: items.map((label) {
+        return PopupMenuItem<String>(
+          value: label,
+          child: Text(label, style: const TextStyle(fontFamily: 'Roboto')),
+        );
+      }).toList(),
+    ).then((selected) {
+      if (selected == null) return;
+      if (selected == 'About') {
+        Navigator.pushNamed(context, '/about');
+      } else if (selected == 'Personalisation') {
+        placeholderCallbackForButtons();
+      }
+    });
+  }
+
   void navigateToHome(BuildContext context) {
     Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
   }
@@ -165,11 +202,14 @@ class HomeScreen extends StatelessWidget {
                             );
                           }),
                           const SizedBox(width: 16), // was 24
-                          HoverUnderlineButton(
-                            label: 'The Print Shack',
-                            onPressed: placeholderCallbackForButtons,
-                            active: false,
-                          ),
+                          // The Print Shack button shows a dropdown with About & Personalisation
+                          Builder(builder: (buttonContext) {
+                            return HoverUnderlineButton(
+                              label: 'The Print Shack ▾',
+                              onPressed: () => showPrintShackMenu(context, buttonContext),
+                              active: false,
+                            );
+                          }),
                           const SizedBox(width: 16), // was 24
                           HoverUnderlineButton(
                             label: 'SALE!',
