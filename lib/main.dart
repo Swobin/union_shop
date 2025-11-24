@@ -132,7 +132,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             // Header
             Container(
-              height: 120, // increased from 100
+              height: 120, 
               color: Colors.white,
               child: Column(
                 children: [
@@ -192,7 +192,7 @@ class HomeScreen extends StatelessWidget {
                             onPressed: () => navigateToHome(context),
                             active: true,
                           ),
-                          const SizedBox(width: 16), // was 24
+                          const SizedBox(width: 16), 
                           // Shop button shows a popup menu anchored under the button
                           Builder(builder: (buttonContext) {
                             return HoverUnderlineButton(
@@ -201,7 +201,7 @@ class HomeScreen extends StatelessWidget {
                               active: false,
                             );
                           }),
-                          const SizedBox(width: 16), // was 24
+                          const SizedBox(width: 16), 
                           // The Print Shack button shows a dropdown with About & Personalisation
                           Builder(builder: (buttonContext) {
                             return HoverUnderlineButton(
@@ -210,13 +210,13 @@ class HomeScreen extends StatelessWidget {
                               active: false,
                             );
                           }),
-                          const SizedBox(width: 16), // was 24
+                          const SizedBox(width: 16), 
                           HoverUnderlineButton(
                             label: 'SALE!',
                             onPressed: placeholderCallbackForButtons,
                             active: false,
                           ),
-                          const SizedBox(width: 16), // was 24
+                          const SizedBox(width: 16), 
                           HoverUnderlineButton(
                             label: 'About',
                             onPressed: () => Navigator.pushNamed(context, '/about'),
@@ -426,7 +426,7 @@ class HomeScreen extends StatelessWidget {
                                     child: HoverUnderlineImageTile(
                                       label: 'Signature Hoodie',
                                       imageUrl:
-                                          'assets/images/zip_up_hoodie.png', // changed from limited_zip_hoodie.jpg
+                                          'assets/images/zip_up_hoodie.png', 
                                       newPrice: '£32.99', // added price (no discount)
                                       onTap: () => Navigator.pushNamed(context, '/product'),
                                     ),
