@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/product_page.dart';
 import 'package:union_shop/about_page.dart';
+import 'package:union_shop/print_shack/print_shack_about.dart';
+import 'package:union_shop/print_shack/personalisation_page.dart'; 
 
 void main() {
   runApp(const UnionShopApp());
@@ -23,6 +25,8 @@ class UnionShopApp extends StatelessWidget {
       routes: {
         '/product': (context) => const ProductPage(),
         '/about': (context) => const AboutPage(),
+        '/print-shack-about': (context) => const PrintShackAboutPage(), // added
+        '/personalisation': (context) => const PersonalisationPage(), // added
       },
     );
   }
@@ -50,7 +54,7 @@ class HomeScreen extends StatelessWidget {
     final Offset buttonTopLeft = button.localToGlobal(Offset.zero, ancestor: overlay);
     final Offset buttonBottomLeft = button.localToGlobal(Offset(0, button.size.height), ancestor: overlay);
 
-    final double gap = 6.0; // small gap so the menu doesn't touch the button
+    const double gap = 6.0; 
     final double left = buttonTopLeft.dx;
     final double top = buttonBottomLeft.dy + gap;
     final double right = overlay.size.width - (left + button.size.width);
@@ -105,9 +109,9 @@ class HomeScreen extends StatelessWidget {
     ).then((selected) {
       if (selected == null) return;
       if (selected == 'About') {
-        Navigator.pushNamed(context, '/about');
+        Navigator.pushNamed(context, '/print-shack-about');
       } else if (selected == 'Personalisation') {
-        placeholderCallbackForButtons();
+        Navigator.pushNamed(context, '/personalisation');
       }
     });
   }
