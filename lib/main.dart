@@ -21,7 +21,7 @@ class UnionShopApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4d2963)),
       ),
       home: const HomeScreen(),
-      initialRoute: '/',
+      // initialRoute removed so `home` is used
       routes: {
         '/product': (context) => const ProductPage(),
         '/about': (context) => const AboutPage(),
@@ -159,7 +159,7 @@ class HomeScreen extends StatelessWidget {
                   // Main header
                   Expanded(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 24), // was 10
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -173,8 +173,8 @@ class HomeScreen extends StatelessWidget {
                                 padding: const EdgeInsets.all(8.0),
                                 child: Image.network(
                                   'https://shop.upsu.net/cdn/shop/files/upsu_300x300.png?v=1614735854',
-                                  height: 44, // slightly smaller
-                                  fit: BoxFit.contain, // preserves aspect ratio
+                                  height: 44,
+                                  fit: BoxFit.contain,
                                   errorBuilder: (context, error, stackTrace) {
                                     return Container(
                                       color: Colors.grey[300],
@@ -189,6 +189,8 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ),
                           ),
+                          // many of these nested widgets are already const where possible;
+                          // add `const` to constructors when all args are compile-time constants
                           const Spacer(),
                           // Center navigation buttons
                           HoverUnderlineButton(
@@ -273,14 +275,14 @@ class HomeScreen extends StatelessWidget {
                       decoration: const BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage(
-                            'assets/images/zip_up_hoodie.png', // changed from limited_zip_hoodie.jpg
+                            'assets/images/zip_up_hoodie.png',
                           ),
                           fit: BoxFit.cover,
                         ),
                       ),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.7),
+                          color: Colors.black.withOpacity(0.7),
                         ),
                       ),
                     ),
@@ -496,19 +498,137 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
-            // Footer
-            Container(
-              width: double.infinity,
-              color: Colors.grey[50],
-              padding: const EdgeInsets.all(24),
-              child: const Text(
-                'Placeholder Footer',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+            // Footer (fixed: non-const Row and concrete placeholders)
+            Column(
+              children: [
+                // Upper footer (columns, newsletter, etc.)
+                Container(
+                  width: double.infinity,
+                  color: Colors.grey[50],
+                  padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Opening Hours column
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Text('Opening Hours', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            SizedBox(height: 12),
+                            Text('Monday - Friday 10am - 4pm'),
+                            SizedBox(height: 6),
+                            Text('Purchase online 24/7'),
+                          ],
+                        ),
+                      ),
+
+                      // Help & Information column
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Help and Information', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            SizedBox(height: 12),
+                            Text('Search'),
+                            SizedBox(height: 6),
+                            Text('Terms & Conditions of Sale'),
+                            SizedBox(height: 6),
+                            Text('Policy'),
+                          ],
+                        ),
+                      ),
+
+                      // Latest Offers / Newsletter column
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Latest Offers', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            const SizedBox(height: 12),
+                            // simple email input + subscribe button visual
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    height: 40,
+                                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      border: Border.all(color: Colors.grey.shade300),
+                                    ),
+                                    child: const Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text('Email address', style: TextStyle(color: Colors.black54)),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  height: 40,
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  color: const Color(0xFF4d2963),
+                                  alignment: Alignment.center,
+                                  child: const Text(
+                                    'SUBSCRIBE',
+                                    style: TextStyle(
+                                        color: Colors.white, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+
+                // Divider between sections
+                const Divider(height: 1),
+
+                // Lower sub-footer (icons + payment badges + copyright)
+                Container(
+                  width: double.infinity,
+                  color: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                  child: Row(
+                    children: [
+                      // left: social icons (placeholders)
+                      Row(
+                        children: [
+                          Container(
+                            width: 36,
+                            height: 36,
+                            color: Colors.grey.shade200,
+                            child: const Icon(Icons.facebook, size: 18),
+                          ),
+                          const SizedBox(width: 12),
+                          Container(
+                            width: 36,
+                            height: 36,
+                            color: Colors.grey.shade200,
+                            child: const Icon(Icons.share, size: 18),
+                          ),
+                        ],
+                      ),
+
+                      const Spacer(),
+
+                      // right: payment badges placeholders
+                      Row(
+                        children: [
+                          Container(width: 40, height: 24, color: Colors.grey.shade100),
+                          const SizedBox(width: 8),
+                          Container(width: 40, height: 24, color: Colors.grey.shade100),
+                          const SizedBox(width: 8),
+                          const Text('© 2025, upsu-store'),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ],
         ),
