@@ -509,16 +509,35 @@ class HomeScreen extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Opening Hours column
-                      Expanded(
+                      // Opening Hours column (single multiline Text instead of many Text widgets)
+                      const Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text('Opening Hours', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                             SizedBox(height: 12),
-                            Text('Monday - Friday 10am - 4pm'),
-                            SizedBox(height: 6),
-                            Text('Purchase online 24/7'),
+                            Text(
+                              '''❄️ Winter Break Closure Dates ❄️
+
+Closing 4pm 19/12/2025
+
+Reopening 10am 05/01/2026
+
+Last post date: 12pm on 18/12/2025
+------------------------
+(Term Time)
+
+Monday - Friday 10am - 4pm
+
+(Outside of Term Time / Consolidation
+Weeks)
+
+Monday - Friday 10am - 3pm
+
+Purchase online 24/7''',
+                              style: TextStyle(fontSize: 14),
+                              textAlign: TextAlign.left,
+                            ),
                           ],
                         ),
                       ),
