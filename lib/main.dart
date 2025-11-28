@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:union_shop/product_page.dart';
 import 'package:union_shop/about_page.dart';
 import 'package:union_shop/print_shack/print_shack_about.dart';
-import 'package:union_shop/print_shack/personalisation_page.dart'; 
+import 'package:union_shop/print_shack/personalisation_page.dart';
+import 'package:union_shop/sale_page.dart';
 
 void main() {
   runApp(const UnionShopApp());
@@ -25,8 +26,9 @@ class UnionShopApp extends StatelessWidget {
       routes: {
         '/product': (context) => const ProductPage(),
         '/about': (context) => const AboutPage(),
-        '/print-shack-about': (context) => const PrintShackAboutPage(), // added
-        '/personalisation': (context) => const PersonalisationPage(), // added
+        '/print-shack-about': (context) => const PrintShackAboutPage(),
+        '/personalisation': (context) => const PersonalisationPage(),
+        '/sale': (context) => const SalePage(), // added
       },
     );
   }
@@ -54,7 +56,7 @@ class HomeScreen extends StatelessWidget {
     final Offset buttonTopLeft = button.localToGlobal(Offset.zero, ancestor: overlay);
     final Offset buttonBottomLeft = button.localToGlobal(Offset(0, button.size.height), ancestor: overlay);
 
-    const double gap = 6.0; 
+    const double gap = 6.0;
     final double left = buttonTopLeft.dx;
     final double top = buttonBottomLeft.dy + gap;
     final double right = overlay.size.width - (left + button.size.width);
@@ -116,6 +118,114 @@ class HomeScreen extends StatelessWidget {
     });
   }
 
+  // New: mobile menu (used by hamburger on small screens)
+  void showMobileMenu(BuildContext context) {
+    final categories = <String>[
+      'Clothing',
+      'Merchandise',
+      'Halloween',
+      'Signature & Essential Range',
+      'Portsmouth City Collection',
+      'Pride Collection',
+      'Graduation',
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // header bar for sheet
+                  Row(
+                    children: [
+                      const Text('Menu', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                      const Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(ctx),
+                      ),
+                    ],
+                  ),
+                  const Divider(),
+                  ListTile(
+                    title: const Text('Home'),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      Navigator.pushNamedAndRemoveUntil(context, '/', (r) => false);
+                    },
+                  ),
+
+                  // Shop with expansion for categories
+                  ExpansionTile(
+                    title: const Text('Shop'),
+                    children: categories
+                        .map((c) => ListTile(
+                              title: Text(c),
+                              onTap: () {
+                                Navigator.pop(ctx);
+                                // Add navigation/filtering later; currently close sheet
+                                // Navigator.pushNamed(context, '/product', arguments: c);
+                              },
+                            ))
+                        .toList(),
+                  ),
+
+                  // The Print Shack submenu
+                  ExpansionTile(
+                    title: const Text('The Print Shack'),
+                    children: [
+                      ListTile(
+                        title: const Text('About'),
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          Navigator.pushNamed(context, '/print-shack-about');
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('Personalisation'),
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          Navigator.pushNamed(context, '/personalisation');
+                        },
+                      ),
+                    ],
+                  ),
+
+                  ListTile(
+                    title: const Text('SALE!'),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      // Navigate to sale page or implement later
+                    },
+                  ),
+
+                  ListTile(
+                    title: const Text('About'),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      Navigator.pushNamed(context, '/about');
+                    },
+                  ),
+
+                  const SizedBox(height: 12),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void navigateToHome(BuildContext context) {
     Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
   }
@@ -136,7 +246,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             // Header
             Container(
-              height: 120, 
+              height: 120,
               color: Colors.white,
               child: Column(
                 children: [
@@ -189,46 +299,60 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          // many of these nested widgets are already const where possible;
-                          // add `const` to constructors when all args are compile-time constants
                           const Spacer(),
-                          // Center navigation buttons
-                          HoverUnderlineButton(
-                            label: 'Home',
-                            onPressed: () => navigateToHome(context),
-                            active: true,
-                          ),
-                          const SizedBox(width: 16), 
-                          // Shop button shows a popup menu anchored under the button
-                          Builder(builder: (buttonContext) {
-                            return HoverUnderlineButton(
-                              label: 'Shop ▾', // small down-caret to indicate dropdown
-                              onPressed: () => showShopCategories(context, buttonContext),
-                              active: false,
-                            );
+
+                          // Responsive navigation: full buttons on wide, single menu on narrow
+                          Builder(builder: (navCtx) {
+                            final isWide = MediaQuery.of(navCtx).size.width > 760;
+                            if (isWide) {
+                              return Row(
+                                children: [
+                                  HoverUnderlineButton(
+                                    label: 'Home',
+                                    onPressed: () => navigateToHome(context),
+                                    active: true,
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Builder(builder: (buttonContext) {
+                                    return HoverUnderlineButton(
+                                      label: 'Shop ▾',
+                                      onPressed: () => showShopCategories(context, buttonContext),
+                                      active: false,
+                                    );
+                                  }),
+                                  const SizedBox(width: 16),
+                                  Builder(builder: (buttonContext) {
+                                    return HoverUnderlineButton(
+                                      label: 'The Print Shack ▾',
+                                      onPressed: () => showPrintShackMenu(context, buttonContext),
+                                      active: false,
+                                    );
+                                  }),
+                                  const SizedBox(width: 16),
+                                  HoverUnderlineButton(
+                                    label: 'SALE!',
+                                    onPressed: placeholderCallbackForButtons,
+                                    active: false,
+                                  ),
+                                  const SizedBox(width: 16),
+                                  HoverUnderlineButton(
+                                    label: 'About',
+                                    onPressed: () => Navigator.pushNamed(context, '/about'),
+                                    active: false,
+                                  ),
+                                ],
+                              );
+                            } else {
+                              // mobile: single hamburger that opens a full menu (includes shop categories & print shack)
+                              return IconButton(
+                                icon: const Icon(Icons.menu),
+                                onPressed: () => showMobileMenu(context),
+                              );
+                            }
                           }),
-                          const SizedBox(width: 16), 
-                          // The Print Shack button shows a dropdown with About & Personalisation
-                          Builder(builder: (buttonContext) {
-                            return HoverUnderlineButton(
-                              label: 'The Print Shack ▾',
-                              onPressed: () => showPrintShackMenu(context, buttonContext),
-                              active: false,
-                            );
-                          }),
-                          const SizedBox(width: 16), 
-                          HoverUnderlineButton(
-                            label: 'SALE!',
-                            onPressed: placeholderCallbackForButtons,
-                            active: false,
-                          ),
-                          const SizedBox(width: 16), 
-                          HoverUnderlineButton(
-                            label: 'About',
-                            onPressed: () => Navigator.pushNamed(context, '/about'),
-                            active: false,
-                          ),
+
                           const Spacer(),
+                          // right-side icons -- keep on all sizes
                           ConstrainedBox(
                             constraints: const BoxConstraints(maxWidth: 600),
                             child: Row(
@@ -426,7 +550,7 @@ class HomeScreen extends StatelessWidget {
                                     child: HoverUnderlineImageTile(
                                       label: 'Signature Hoodie',
                                       imageUrl:
-                                          'assets/images/zip_up_hoodie.png', 
+                                          'assets/images/zip_up_hoodie.png',
                                       newPrice: '£32.99', // added price (no discount)
                                       onTap: () => Navigator.pushNamed(context, '/product'),
                                     ),

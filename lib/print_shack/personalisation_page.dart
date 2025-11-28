@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:union_shop/widgets/shared_widgets.dart';
 
 class PersonalisationPage extends StatelessWidget {
   const PersonalisationPage({super.key});
@@ -6,19 +7,45 @@ class PersonalisationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Personalisation'),
-        backgroundColor: const Color(0xFF4d2963),
-      ),
-      body: const Center(
-        child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Text(
-            '',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18),
+      body: Column(
+        children: [
+          const AppHeader(activePage: 'print-shack'),
+
+          // Page content
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Personalisation',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 720),
+                      child: const Text(
+                        'Details about the personalisation service can be shown here. Implement forms or upload UI as required.',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
           ),
-        ),
+
+          const AppFooter(),
+        ],
       ),
     );
   }
