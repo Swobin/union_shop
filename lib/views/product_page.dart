@@ -34,6 +34,7 @@ class ProductPage extends StatelessWidget {
             _buildCollection(
               context,
               title: 'ESSENTIAL RANGE - OVER 20% OFF!',
+              isEssentialRange: true,
               products: [
                 _ProductData(
                   name: 'Limited Edition Essential Zip Hoodie',
@@ -66,6 +67,7 @@ class ProductPage extends StatelessWidget {
             _buildCollection(
               context,
               title: 'Signature Range',
+              isEssentialRange: false,
               products: [
                 _ProductData(
                   name: 'Signature Hoodie',
@@ -94,6 +96,7 @@ class ProductPage extends StatelessWidget {
             _buildCollection(
               context,
               title: 'Portsmouth City Collection',
+              isEssentialRange: false,
               products: [
                 _ProductData(
                   name: 'Portsmouth City Hoodie',
@@ -122,6 +125,7 @@ class ProductPage extends StatelessWidget {
             _buildCollection(
               context,
               title: 'Merchandise',
+              isEssentialRange: false,
               products: [
                 _ProductData(
                   name: 'Union Mug',
@@ -160,6 +164,7 @@ class ProductPage extends StatelessWidget {
             _buildCollection(
               context,
               title: 'Pride Collection',
+              isEssentialRange: false,
               products: [
                 _ProductData(
                   name: 'Pride Rainbow Hoodie',
@@ -186,7 +191,6 @@ class ProductPage extends StatelessWidget {
 
             const SizedBox(height: 40),
 
-            // Footer at the bottom
             const AppFooter(),
           ],
         ),
@@ -197,6 +201,7 @@ class ProductPage extends StatelessWidget {
   Widget _buildCollection(
     BuildContext context, {
     required String title,
+    required bool isEssentialRange,
     required List<_ProductData> products,
   }) {
     return Container(
@@ -205,12 +210,20 @@ class ProductPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1,
+          MouseRegion(
+            cursor: isEssentialRange ? SystemMouseCursors.click : SystemMouseCursors.basic,
+            child: GestureDetector(
+              onTap: isEssentialRange ? () => Navigator.pushNamed(context, '/essential-range') : null,
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                  decoration: isEssentialRange ? TextDecoration.underline : null,
+                  decorationColor: isEssentialRange ? const Color(0xFF4d2963) : null,
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 32),
@@ -242,6 +255,7 @@ class ProductPage extends StatelessWidget {
                     image: product.image,
                     oldPrice: product.oldPrice,
                     newPrice: product.newPrice,
+                    isEssentialRange: isEssentialRange,
                   );
                 },
               );
@@ -272,12 +286,14 @@ class _ProductCard extends StatefulWidget {
   final String image;
   final String? oldPrice;
   final String newPrice;
+  final bool isEssentialRange;
 
   const _ProductCard({
     required this.name,
     required this.image,
     this.oldPrice,
     required this.newPrice,
+    this.isEssentialRange = false,
   });
 
   @override
@@ -292,10 +308,9 @@ class _ProductCardState extends State<_ProductCard> {
     return MouseRegion(
       onEnter: (_) => setState(() => _hovering = true),
       onExit: (_) => setState(() => _hovering = false),
+      cursor: widget.isEssentialRange ? SystemMouseCursors.click : SystemMouseCursors.basic,
       child: GestureDetector(
-        onTap: () {
-          // Navigate to product detail page (implement later)
-        },
+        onTap: widget.isEssentialRange ? () => Navigator.pushNamed(context, '/essential-range') : null,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

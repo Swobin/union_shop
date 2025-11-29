@@ -4,6 +4,8 @@ import 'package:union_shop/views/about_page.dart';
 import 'package:union_shop/views/print_shack_about.dart';
 import 'package:union_shop/views/personalisation_page.dart';
 import 'package:union_shop/views/sale_page.dart';
+import 'package:union_shop/views/collection_page.dart';
+import 'package:union_shop/views/essential_range_page.dart';
 
 void main() {
   runApp(const UnionShopApp());
@@ -21,10 +23,11 @@ class UnionShopApp extends StatelessWidget {
         fontFamily: 'Roboto',
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4d2963)),
       ),
-      initialRoute: '/',
+      home: const HomeScreen(),
       routes: {
-        '/': (context) => const HomeScreen(),
         '/product': (context) => const ProductPage(),
+        '/collection': (context) => const CollectionPage(),
+        '/essential-range': (context) => const EssentialRangePage(),
         '/about': (context) => const AboutPage(),
         '/print-shack-about': (context) => const PrintShackAboutPage(),
         '/personalisation': (context) => const PersonalisationPage(),
@@ -480,7 +483,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // New two clickable pictures row
+                    // Essential Range Items - Navigate to /essential-range
                     LayoutBuilder(
                       builder: (context, constraints) {
                         final isWide = constraints.maxWidth > 640;
@@ -490,21 +493,20 @@ class HomeScreen extends StatelessWidget {
                                   Expanded(
                                     child: HoverUnderlineImageTile(
                                       label: 'Limited Edition Essential Zip Hoodies',
-                                      imageUrl: 'assets/images/zip_up_hoodie.png', // <-- updated
+                                      imageUrl: 'assets/images/zip_up_hoodie.png',
                                       oldPrice: '£20.00',
                                       newPrice: '£14.99',
-                                      onTap: () => Navigator.pushNamed(context, '/product'),
+                                      onTap: () => Navigator.pushNamed(context, '/essential-range'),
                                     ),
                                   ),
                                   const SizedBox(width: 32),
                                   Expanded(
                                     child: HoverUnderlineImageTile(
                                       label: 'Essential T-Shirt',
-                                      imageUrl:
-                                          'assets/images/limited_t_shirt.png', // <-- changed to limited_t_shirt.png
+                                      imageUrl: 'assets/images/limited_t_shirt.png',
                                       oldPrice: '£10.00',
                                       newPrice: '£6.99',
-                                      onTap: () => Navigator.pushNamed(context, '/product'),
+                                      onTap: () => Navigator.pushNamed(context, '/essential-range'),
                                     ),
                                   ),
                                 ],
@@ -513,25 +515,25 @@ class HomeScreen extends StatelessWidget {
                                 children: [
                                   HoverUnderlineImageTile(
                                     label: 'Limited Edition Essential Zip Hoodies',
-                                    imageUrl: 'assets/images/zip_up_hoodie.png', // <-- updated
+                                    imageUrl: 'assets/images/zip_up_hoodie.png',
                                     oldPrice: '£20.00',
                                     newPrice: '£14.99',
-                                    onTap: () => Navigator.pushNamed(context, '/product'),
+                                    onTap: () => Navigator.pushNamed(context, '/essential-range'),
                                   ),
                                   const SizedBox(height: 24),
                                   HoverUnderlineImageTile(
                                     label: 'Essential T-Shirt',
-                                    imageUrl: 'assets/images/limited_t_shirt.png', // <-- changed to limited_t_shirt.png
+                                    imageUrl: 'assets/images/limited_t_shirt.png',
                                     oldPrice: '£10.00',
                                     newPrice: '£6.99',
-                                    onTap: () => Navigator.pushNamed(context, '/product'),
+                                    onTap: () => Navigator.pushNamed(context, '/essential-range'),
                                   ),
                                 ],
                               );
                       },
                     ),
 
-                    // Signature Range title + two clickable pictures
+                    // Signature Range
                     const SizedBox(height: 32),
                     const Text(
                       'Signature Range',
@@ -552,9 +554,8 @@ class HomeScreen extends StatelessWidget {
                                   Expanded(
                                     child: HoverUnderlineImageTile(
                                       label: 'Signature Hoodie',
-                                      imageUrl:
-                                          'assets/images/zip_up_hoodie.png',
-                                      newPrice: '£32.99', // added price (no discount)
+                                      imageUrl: 'assets/images/zip_up_hoodie.png',
+                                      newPrice: '£32.99',
                                       onTap: () => Navigator.pushNamed(context, '/product'),
                                     ),
                                   ),
@@ -562,9 +563,8 @@ class HomeScreen extends StatelessWidget {
                                   Expanded(
                                     child: HoverUnderlineImageTile(
                                       label: 'Signature T-Shirt',
-                                      imageUrl:
-                                          'assets/images/signature_t_shirt.png', // <-- changed to signature_t_shirt.png
-                                      newPrice: '£14.99', // added price (no discount)
+                                      imageUrl: 'assets/images/signature_t_shirt.png',
+                                      newPrice: '£14.99',
                                       onTap: () => Navigator.pushNamed(context, '/product'),
                                     ),
                                   ),
@@ -581,8 +581,7 @@ class HomeScreen extends StatelessWidget {
                                   const SizedBox(height: 24),
                                   HoverUnderlineImageTile(
                                     label: 'Signature T-Shirt',
-                                    imageUrl:
-                                        'assets/images/signature_t_shirt.png', // <-- changed to signature_t_shirt.png
+                                    imageUrl: 'assets/images/signature_t_shirt.png',
                                     newPrice: '£14.99',
                                     onTap: () => Navigator.pushNamed(context, '/product'),
                                   ),
@@ -590,7 +589,19 @@ class HomeScreen extends StatelessWidget {
                               );
                       },
                     ),
+
+                    // Portsmouth City Collection
                     const SizedBox(height: 48),
+                    const Text(
+                      'Portsmouth City Collection',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     GridView.count(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -599,26 +610,42 @@ class HomeScreen extends StatelessWidget {
                       mainAxisSpacing: 48,
                       children: const [
                         ProductCard(
-                          title: 'Placeholder Product 1',
-                          price: '£10.00',
-                          imageUrl: 'assets/images/zip_up_hoodie.png', // <-- updated
+                          title: 'Portsmouth City Hoodie',
+                          price: '£29.99',
+                          imageUrl: 'assets/images/zip_up_hoodie.png',
                         ),
                         ProductCard(
-                          title: 'Placeholder Product 2',
-                          price: '£15.00',
-                          imageUrl: 'assets/images/zip_up_hoodie.png', // <-- updated
+                          title: 'Portsmouth City T-Shirt',
+                          price: '£12.99',
+                          imageUrl: 'assets/images/zip_up_hoodie.png',
                         ),
                         ProductCard(
-                          title: 'Placeholder Product 3',
-                          price: '£20.00',
-                          imageUrl: 'assets/images/zip_up_hoodie.png', // <-- updated
+                          title: 'Portsmouth City Cap',
+                          price: '£9.99',
+                          imageUrl: 'assets/images/zip_up_hoodie.png',
                         ),
                         ProductCard(
-                          title: 'Placeholder Product 4',
-                          price: '£25.00',
-                          imageUrl: 'assets/images/zip_up_hoodie.png', // <-- updated
+                          title: 'Portsmouth City Tote Bag',
+                          price: '£7.99',
+                          imageUrl: 'assets/images/zip_up_hoodie.png',
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pushNamed(context, '/collection'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4d2963),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
+                        ),
+                      ),
+                      child: const Text(
+                        'VIEW ALL',
+                        style: TextStyle(fontSize: 16, letterSpacing: 1.2, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ],
                 ),
