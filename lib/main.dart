@@ -21,14 +21,14 @@ class UnionShopApp extends StatelessWidget {
         fontFamily: 'Roboto',
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4d2963)),
       ),
-      home: const HomeScreen(),
-      // initialRoute removed so `home` is used
+      initialRoute: '/',
       routes: {
+        '/': (context) => const HomeScreen(),
         '/product': (context) => const ProductPage(),
         '/about': (context) => const AboutPage(),
         '/print-shack-about': (context) => const PrintShackAboutPage(),
         '/personalisation': (context) => const PersonalisationPage(),
-        '/sale': (context) => const SalePage(), // added
+        '/sale': (context) => const SalePage(),
       },
     );
   }
@@ -420,37 +420,40 @@ class HomeScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const Text(
-                          'Placeholder Hero Title',
+                          'ESSENTIAL RANGE - OVER 20% OFF',
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                             height: 1.2,
                           ),
+                          textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
                         const Text(
-                          "This is placeholder text for the hero section.",
+                          "Over 20% off our Essential Range. Come and grab yours while stock lasts!",
                           style: TextStyle(
                             fontSize: 20,
                             color: Colors.white,
                             height: 1.5,
+                            fontWeight: FontWeight.w500,
                           ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 32),
                         ElevatedButton(
-                          onPressed: placeholderCallbackForButtons,
+                          onPressed: () => Navigator.pushNamed(context, '/product'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF4d2963),
                             foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                             shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.zero,
                             ),
                           ),
                           child: const Text(
-                            'BROWSE PRODUCTS',
-                            style: TextStyle(fontSize: 14, letterSpacing: 1),
+                            'BROWSE COLLECTION',
+                            style: TextStyle(fontSize: 16, letterSpacing: 1.2, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ],
