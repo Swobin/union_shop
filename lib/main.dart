@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:union_shop/product_page.dart';
-import 'package:union_shop/about_page.dart';
-import 'package:union_shop/print_shack/print_shack_about.dart';
-import 'package:union_shop/print_shack/personalisation_page.dart';
-import 'package:union_shop/sale_page.dart';
+import 'package:union_shop/views/product_page.dart';
+import 'package:union_shop/views/about_page.dart';
+import 'package:union_shop/views/print_shack_about.dart';
+import 'package:union_shop/views/personalisation_page.dart';
+import 'package:union_shop/views/sale_page.dart';
 
 void main() {
   runApp(const UnionShopApp());
