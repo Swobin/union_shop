@@ -6,6 +6,7 @@ import 'package:union_shop/views/personalisation_page.dart';
 import 'package:union_shop/views/sale_page.dart';
 import 'package:union_shop/views/collection_page.dart';
 import 'package:union_shop/views/essential_range_page.dart';
+import 'package:union_shop/views/product_detail_page.dart'; // ADD THIS IMPORT
 
 void main() {
   runApp(const UnionShopApp());
@@ -28,6 +29,7 @@ class UnionShopApp extends StatelessWidget {
         '/product': (context) => const ProductPage(),
         '/collection': (context) => const CollectionPage(),
         '/essential-range': (context) => const EssentialRangePage(),
+        '/product-detail': (context) => const ProductDetailPage(), // ADD THIS ROUTE
         '/about': (context) => const AboutPage(),
         '/print-shack-about': (context) => const PrintShackAboutPage(),
         '/personalisation': (context) => const PersonalisationPage(),
