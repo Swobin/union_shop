@@ -18,6 +18,18 @@ class _EssentialRangePageState extends State<EssentialRangePage> {
     'Biggest Discount',
   ];
 
+  // List of product images from assets
+  final List<String> _productImages = [
+    'assets/images/product1.jpg',
+    'assets/images/product2.jpg',
+    'assets/images/product3.jpg',
+    'assets/images/product4.jpg',
+    'assets/images/product5.jpg',
+    'assets/images/product6.jpg',
+    'assets/images/product7.jpg',
+    'assets/images/product8.jpg',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,9 +174,19 @@ class _EssentialRangePageState extends State<EssentialRangePage> {
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
-                              Image.network(
-                                'https://via.placeholder.com/300x400/4d2963/FFFFFF?text=${product['name']}',
+                              Image.asset(
+                                _productImages[index],
                                 fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.grey[300],
+                                    child: const Icon(
+                                      Icons.image_not_supported,
+                                      size: 50,
+                                      color: Colors.grey,
+                                    ),
+                                  );
+                                },
                               ),
                               Positioned(
                                 top: 12,

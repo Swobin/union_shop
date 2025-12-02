@@ -1,35 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:union_shop/views/product_page.dart';
+import 'package:union_shop/views/about_page.dart';
 
 void main() {
-  group('Product Page Tests', () {
-    testWidgets('ProductPage renders without errors', (WidgetTester tester) async {
+  group('About Page Tests', () {
+    testWidgets('AboutPage renders without errors', (WidgetTester tester) async {
       await tester.binding.setSurfaceSize(const Size(1200, 800));
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: ProductPage(),
+          home: AboutPage(),
         ),
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(ProductPage), findsOneWidget);
+      expect(find.byType(AboutPage), findsOneWidget);
 
       await tester.binding.setSurfaceSize(null);
     });
 
-    testWidgets('ProductPage displays header', (WidgetTester tester) async {
+    testWidgets('AboutPage displays header', (WidgetTester tester) async {
       await tester.binding.setSurfaceSize(const Size(1200, 800));
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: ProductPage(),
+          home: AboutPage(),
         ),
       );
       await tester.pumpAndSettle();
 
-      // Check for header elements
       expect(find.byType(Image), findsWidgets); // Logo
       expect(find.byIcon(Icons.search), findsWidgets);
       expect(find.byIcon(Icons.person_outline), findsWidgets);
@@ -38,12 +37,12 @@ void main() {
       await tester.binding.setSurfaceSize(null);
     });
 
-    testWidgets('ProductPage displays navigation on desktop', (WidgetTester tester) async {
+    testWidgets('AboutPage displays navigation with About active', (WidgetTester tester) async {
       await tester.binding.setSurfaceSize(const Size(1200, 800));
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: ProductPage(),
+          home: AboutPage(),
         ),
       );
       await tester.pumpAndSettle();
@@ -55,188 +54,185 @@ void main() {
       await tester.binding.setSurfaceSize(null);
     });
 
-    testWidgets('ProductPage displays hamburger menu on mobile', (WidgetTester tester) async {
+    testWidgets('AboutPage is scrollable', (WidgetTester tester) async {
       await tester.binding.setSurfaceSize(const Size(1200, 800));
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: ProductPage(),
+          home: AboutPage(),
         ),
       );
       await tester.pumpAndSettle();
 
-      // At 1200px should show regular nav, not hamburger
-      // But hamburger should exist in mobile view
-      expect(find.byType(ProductPage), findsOneWidget);
+      expect(find.byType(SingleChildScrollView), findsOneWidget);
 
       await tester.binding.setSurfaceSize(null);
     });
 
-    testWidgets('ProductPage is scrollable', (WidgetTester tester) async {
+    testWidgets('AboutPage has white background', (WidgetTester tester) async {
       await tester.binding.setSurfaceSize(const Size(1200, 800));
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: ProductPage(),
+          home: AboutPage(),
         ),
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(SingleChildScrollView), findsWidgets);
+      final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+      expect(scaffold.backgroundColor, Colors.white);
 
       await tester.binding.setSurfaceSize(null);
     });
 
-    testWidgets('ProductPage displays product grid', (WidgetTester tester) async {
+    testWidgets('AboutPage displays "About us" heading', (WidgetTester tester) async {
       await tester.binding.setSurfaceSize(const Size(1200, 800));
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: ProductPage(),
+          home: AboutPage(),
         ),
       );
       await tester.pumpAndSettle();
 
-      // Should have product items
-      expect(find.byType(ProductPage), findsOneWidget);
+      expect(find.text('About us'), findsOneWidget);
 
       await tester.binding.setSurfaceSize(null);
     });
 
-    testWidgets('ProductPage displays product images', (WidgetTester tester) async {
+    testWidgets('AboutPage heading has correct styling', (WidgetTester tester) async {
       await tester.binding.setSurfaceSize(const Size(1200, 800));
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: ProductPage(),
+          home: AboutPage(),
         ),
       );
       await tester.pumpAndSettle();
 
-      // Should have multiple product images
-      expect(find.byType(Image), findsWidgets);
+      final textWidget = tester.widget<Text>(find.text('About us'));
+      expect(textWidget.style?.fontSize, 28);
+      expect(textWidget.style?.fontWeight, FontWeight.bold);
+      expect(textWidget.textAlign, TextAlign.center);
 
       await tester.binding.setSurfaceSize(null);
     });
 
-    testWidgets('ProductPage displays product prices', (WidgetTester tester) async {
+    testWidgets('AboutPage displays welcome message', (WidgetTester tester) async {
       await tester.binding.setSurfaceSize(const Size(1200, 800));
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: ProductPage(),
+          home: AboutPage(),
         ),
       );
       await tester.pumpAndSettle();
 
-      // Should have prices in GBP format
-      expect(find.textContaining('£'), findsWidgets);
+      expect(find.textContaining('Welcome to the Union Shop!'), findsOneWidget);
 
       await tester.binding.setSurfaceSize(null);
     });
 
-    testWidgets('ProductPage displays footer', (WidgetTester tester) async {
+    testWidgets('AboutPage displays personalisation information', (WidgetTester tester) async {
       await tester.binding.setSurfaceSize(const Size(1200, 800));
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: ProductPage(),
+          home: AboutPage(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('exclusive personalisation service'), findsOneWidget);
+
+      await tester.binding.setSurfaceSize(null);
+    });
+
+    testWidgets('AboutPage displays delivery information', (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(1200, 800));
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: AboutPage(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('delivery or instore collection'), findsOneWidget);
+
+      await tester.binding.setSurfaceSize(null);
+    });
+
+    testWidgets('AboutPage displays contact email', (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(1200, 800));
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: AboutPage(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('hello@upsu.net'), findsOneWidget);
+
+      await tester.binding.setSurfaceSize(null);
+    });
+
+    testWidgets('AboutPage displays team signature', (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(1200, 800));
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: AboutPage(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('The Union Shop & Reception Team'), findsOneWidget);
+
+      await tester.binding.setSurfaceSize(null);
+    });
+
+    testWidgets('AboutPage has proper layout structure', (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(1200, 800));
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: AboutPage(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Just verify it has padding and constrained box
+      expect(find.byType(Padding), findsWidgets);
+      expect(find.byType(ConstrainedBox), findsWidgets);
+
+      await tester.binding.setSurfaceSize(null);
+    });
+
+    testWidgets('AboutPage displays footer', (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(1200, 800));
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: AboutPage(),
         ),
       );
       await tester.pumpAndSettle();
 
       expect(find.text('Opening Hours'), findsWidgets);
       expect(find.text('Help and Information'), findsWidgets);
-      expect(find.text('Latest Offers'), findsWidgets);
-
-      await tester.binding.setSurfaceSize(null);
-    });
-
-    testWidgets('ProductPage displays copyright', (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(const Size(1200, 800));
-
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: ProductPage(),
-        ),
-      );
-      await tester.pumpAndSettle();
-
       expect(find.text('© 2025, upsu-store'), findsWidgets);
 
       await tester.binding.setSurfaceSize(null);
     });
 
-    testWidgets('ProductPage has consistent theme', (WidgetTester tester) async {
+    testWidgets('AboutPage displays social media icons in footer', (WidgetTester tester) async {
       await tester.binding.setSurfaceSize(const Size(1200, 800));
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: ProductPage(),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Page should render successfully
-      expect(find.byType(ProductPage), findsOneWidget);
-
-      await tester.binding.setSurfaceSize(null);
-    });
-
-    testWidgets('ProductPage displays filter/sort options', (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(const Size(1200, 800));
-
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: ProductPage(),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Check if page has loaded
-      expect(find.byType(ProductPage), findsOneWidget);
-
-      await tester.binding.setSurfaceSize(null);
-    });
-
-    testWidgets('ProductPage handles different screen sizes', (WidgetTester tester) async {
-      // Test desktop
-      await tester.binding.setSurfaceSize(const Size(1200, 800));
-
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: ProductPage(),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.byType(ProductPage), findsOneWidget);
-
-      await tester.binding.setSurfaceSize(null);
-    });
-
-    testWidgets('ProductPage displays sale badge if applicable', (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(const Size(1200, 800));
-
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: ProductPage(),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Page should render
-      expect(find.byType(ProductPage), findsOneWidget);
-
-      await tester.binding.setSurfaceSize(null);
-    });
-
-    testWidgets('ProductPage social media icons display', (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(const Size(1200, 800));
-
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: ProductPage(),
+          home: AboutPage(),
         ),
       );
       await tester.pumpAndSettle();

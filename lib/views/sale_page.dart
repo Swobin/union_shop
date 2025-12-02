@@ -21,6 +21,22 @@ class _SalePageState extends State<SalePage> {
   String _selectedSort = 'Featured';
   final List<String> _sortOptions = ['Featured', 'Price: Low to High', 'Price: High to Low', 'Biggest Discount'];
 
+  // List of product images from assets
+  final List<String> _productImages = [
+    'assets/images/product1.jpg',
+    'assets/images/product2.jpg',
+    'assets/images/product3.jpg',
+    'assets/images/product4.jpg',
+    'assets/images/product5.jpg',
+    'assets/images/product6.jpg',
+    'assets/images/product7.jpg',
+    'assets/images/product8.jpg',
+    'assets/images/product9.jpg',
+    'assets/images/product10.jpg',
+    'assets/images/product11.jpg',
+    'assets/images/product12.jpg',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -387,84 +403,84 @@ class _SalePageState extends State<SalePage> {
     return [
       {
         'name': 'Essential Zip Hoodie',
-        'image': 'https://via.placeholder.com/400x500/4d2963/FFFFFF?text=Zip+Hoodie',
+        'image': _productImages[0],
         'oldPrice': '£20.00',
         'salePrice': '£14.99',
         'discountPercent': 25,
       },
       {
         'name': 'Essential T-Shirt',
-        'image': 'https://via.placeholder.com/400x500/4d2963/FFFFFF?text=T-Shirt',
+        'image': _productImages[1],
         'oldPrice': '£10.00',
         'salePrice': '£6.99',
         'discountPercent': 30,
       },
       {
         'name': 'Essential Sweatshirt',
-        'image': 'https://via.placeholder.com/400x500/4d2963/FFFFFF?text=Sweatshirt',
+        'image': _productImages[2],
         'oldPrice': '£18.00',
         'salePrice': '£12.99',
         'discountPercent': 28,
       },
       {
         'name': 'Essential Joggers',
-        'image': 'https://via.placeholder.com/400x500/4d2963/FFFFFF?text=Joggers',
+        'image': _productImages[3],
         'oldPrice': '£16.00',
         'salePrice': '£11.99',
         'discountPercent': 25,
       },
       {
         'name': 'Signature Hoodie',
-        'image': 'https://via.placeholder.com/400x500/4d2963/FFFFFF?text=Signature',
+        'image': _productImages[4],
         'oldPrice': '£35.00',
         'salePrice': '£24.99',
         'discountPercent': 29,
       },
       {
         'name': 'Portsmouth City Cap',
-        'image': 'https://via.placeholder.com/400x500/4d2963/FFFFFF?text=Cap',
+        'image': _productImages[5],
         'oldPrice': '£12.00',
         'salePrice': '£7.99',
         'discountPercent': 33,
       },
       {
         'name': 'Pride T-Shirt',
-        'image': 'https://via.placeholder.com/400x500/4d2963/FFFFFF?text=Pride',
+        'image': _productImages[6],
         'oldPrice': '£14.00',
         'salePrice': '£8.99',
         'discountPercent': 36,
       },
       {
         'name': 'Union Mug',
-        'image': 'https://via.placeholder.com/400x500/4d2963/FFFFFF?text=Mug',
+        'image': _productImages[7],
         'oldPrice': '£8.00',
         'salePrice': '£4.99',
         'discountPercent': 38,
       },
       {
         'name': 'Essential Beanie',
-        'image': 'https://via.placeholder.com/400x500/4d2963/FFFFFF?text=Beanie',
+        'image': _productImages[8],
         'oldPrice': '£10.00',
         'salePrice': '£5.99',
         'discountPercent': 40,
       },
       {
         'name': 'Signature Polo',
-        'image': 'https://via.placeholder.com/400x500/4d2963/FFFFFF?text=Polo',
+        'image': _productImages[9],
         'oldPrice': '£22.00',
         'salePrice': '£14.99',
         'discountPercent': 32,
       },
       {
         'name': 'Portsmouth Tote Bag',
-        'image': 'https://via.placeholder.com/400x500/4d2963/FFFFFF?text=Tote',
+        'image': _productImages[10],
         'oldPrice': '£10.00',
         'salePrice': '£5.99',
         'discountPercent': 40,
       },
       {
         'name': 'Union Notebook',
-        'image': 'https://via.placeholder.com/400x500/4d2963/FFFFFF?text=Notebook',
+        'image': _productImages[11],
         'oldPrice': '£5.00',
         'salePrice': '£2.99',
         'discountPercent': 40,
@@ -516,7 +532,7 @@ class _SaleProductCardState extends State<_SaleProductCard> {
                 fit: StackFit.expand,
                 children: [
                   // Product image
-                  Image.network(
+                  Image.asset(
                     widget.image,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
