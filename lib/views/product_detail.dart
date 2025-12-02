@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/widgets/footer.dart';
 import 'package:union_shop/widgets/header.dart';
+import 'package:union_shop/services/cart_service.dart';
 
 class ProductDetailPage extends StatefulWidget {
   const ProductDetailPage({super.key});
@@ -24,20 +25,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     Colors.red,
   ];
 
-  // Product images from assets - using only existing images
+  // Product images from assets - using existing images
   final List<String> _productImages = [
-    'assets/images/hoodie.jpg',
-    'assets/images/hoodie.jpg',
-    'assets/images/hoodie.jpg',
-    'assets/images/hoodie.jpg',
+    'assets/images/zip_up_hoodie.png',
+    'assets/images/zip_up_hoodie.png',
+    'assets/images/zip_up_hoodie.png',
+    'assets/images/zip_up_hoodie.png',
   ];
 
-  // Related products images - using only existing images
+  // Related products images - using existing images
   final List<String> _relatedProductImages = [
-    'assets/images/tshirt.jpg',
-    'assets/images/hoodie.jpg',
-    'assets/images/tshirt.jpg',
-    'assets/images/hoodie.jpg',
+    'assets/images/limited_t_shirt.png',
+    'assets/images/signature_t_shirt.png',
+    'assets/images/zip_up_hoodie.png',
+    'assets/images/limited_t_shirt.png',
   ];
 
   @override
@@ -100,19 +101,28 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Widget _buildImageGallery() {
     return Column(
       children: [
-        AspectRatio(
-          aspectRatio: 1,
-          child: Image.asset(
-            _productImages[_selectedImageIndex],
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                color: Colors.grey[300],
-                child: const Center(
-                  child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
-                ),
-              );
-            },
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Image.asset(
+                _productImages[_selectedImageIndex],
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey[300],
+                    child: const Center(
+                      child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
+                    ),
+                  );
+                },
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -128,20 +138,24 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: _selectedImageIndex == index ? const Color(0xFF4d2963) : Colors.grey[300]!,
-                        width: 2,
+                        width: _selectedImageIndex == index ? 3 : 1,
                       ),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: Image.asset(
-                        _productImages[index],
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey[300],
-                            child: const Icon(Icons.image_not_supported, color: Colors.grey),
-                          );
-                        },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Image.asset(
+                          _productImages[index],
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Colors.grey[300],
+                              child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -224,9 +238,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: () {
+                  final cartService = CartService();
+                  cartService.addToCart(
+                    name: 'Essential Zip Hoodie',
+                    image: _productImages[_selectedImageIndex], // Use the selected image
+                    price: 14.99,
+                    originalPrice: 20.00,
+                    size: _selectedSize,
+                    color: _getColorName(_selectedColorIndex),
+                    quantity: _quantity,
+                  );
+                  
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text('Added Essential Hoodie to cart'),
+                      content: Text(
+                          'Added $_quantity x Essential Hoodie (${_getColorName(_selectedColorIndex)}, $_selectedSize) to cart'),
                       duration: const Duration(seconds: 2),
                       action: SnackBarAction(
                         label: 'VIEW CART',
@@ -253,7 +279,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           children: [
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Added to wishlist'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+                },
                 icon: const Icon(Icons.favorite_border),
                 label: const Text('WISHLIST'),
                 style: OutlinedButton.styleFrom(
@@ -263,7 +296,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ),
             const SizedBox(width: 12),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Share functionality coming soon'),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
+              },
               icon: const Icon(Icons.share),
               style: IconButton.styleFrom(
                 side: BorderSide(color: Colors.grey[300]!),
@@ -278,19 +318,32 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
+  String _getColorName(int index) {
+    const colorNames = ['Black', 'Purple', 'Grey', 'Blue', 'Red'];
+    return colorNames[index];
+  }
+
   Widget _buildSizeSelector() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Size', style: TextStyle(fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
-        DropdownButton<String>(
-          value: _selectedSize,
-          isExpanded: true,
-          items: _sizes.map((size) {
-            return DropdownMenuItem(value: size, child: Text(size));
-          }).toList(),
-          onChanged: (value) => setState(() => _selectedSize = value!),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: DropdownButton<String>(
+            value: _selectedSize,
+            isExpanded: true,
+            underline: const SizedBox(),
+            items: _sizes.map((size) {
+              return DropdownMenuItem(value: size, child: Text(size));
+            }).toList(),
+            onChanged: (value) => setState(() => _selectedSize = value!),
+          ),
         ),
       ],
     );
@@ -315,7 +368,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: _selectedColorIndex == index ? const Color(0xFF4d2963) : Colors.grey[300]!,
-                    width: 2,
+                    width: _selectedColorIndex == index ? 3 : 1,
                   ),
                 ),
                 child: _selectedColorIndex == index ? const Icon(Icons.check, color: Colors.white, size: 20)
@@ -347,7 +400,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text('$_quantity', style: const TextStyle(fontSize: 18)),
+              child: Text('$_quantity', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             ),
             IconButton(
               onPressed: () => setState(() => _quantity++),
@@ -500,11 +553,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             children: [
               _buildRelatedProduct('Essential T-Shirt', '£10.00', _relatedProductImages[0]),
               const SizedBox(width: 16),
-              _buildRelatedProduct('Essential Sweatshirt', '£18.00', _relatedProductImages[1]),
+              _buildRelatedProduct('Signature T-Shirt', '£12.00', _relatedProductImages[1]),
               const SizedBox(width: 16),
-              _buildRelatedProduct('Essential Joggers', '£16.00', _relatedProductImages[2]),
+              _buildRelatedProduct('Essential Hoodie', '£25.00', _relatedProductImages[2]),
               const SizedBox(width: 16),
-              _buildRelatedProduct('Essential Cap', '£9.99', _relatedProductImages[3]),
+              _buildRelatedProduct('Limited T-Shirt', '£9.99', _relatedProductImages[3]),
             ],
           ),
         ],
@@ -514,28 +567,43 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   Widget _buildRelatedProduct(String name, String price, String imagePath) {
     return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AspectRatio(
-            aspectRatio: 1,
-            child: Image.asset(
-              imagePath,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: Colors.grey[300],
-                  child: const Center(
-                    child: Icon(Icons.image_not_supported, color: Colors.grey),
+      child: GestureDetector(
+        onTap: () {
+          // Navigate to product detail (in real app, pass product data)
+          Navigator.pushNamed(context, '/product-detail');
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey[300]!),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Image.asset(
+                    imagePath,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey[300],
+                        child: const Center(
+                          child: Icon(Icons.image_not_supported, color: Colors.grey),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
+                ),
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(name, style: const TextStyle(fontWeight: FontWeight.w500)),
-          Text(price, style: const TextStyle(fontWeight: FontWeight.bold)),
-        ],
+            const SizedBox(height: 8),
+            Text(name, style: const TextStyle(fontWeight: FontWeight.w500)),
+            Text(price, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF4d2963))),
+          ],
+        ),
       ),
     );
   }

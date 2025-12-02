@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/widgets/footer.dart';
 import 'package:union_shop/widgets/header.dart';
+import 'package:union_shop/services/cart_service.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -10,52 +11,34 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  // Sample cart items
-  final List<Map<String, dynamic>> _cartItems = [
-    {
-      'id': '1',
-      'name': 'Essential Zip Hoodie',
-      'price': 14.99,
-      'originalPrice': 20.00,
-      'quantity': 1,
-      'size': 'M',
-      'color': 'Black',
-      'image': 'assets/images/product1.jpg',
-    },
-    {
-      'id': '2',
-      'name': 'Essential T-Shirt',
-      'price': 10.00,
-      'originalPrice': null,
-      'quantity': 2,
-      'size': 'L',
-      'color': 'Purple',
-      'image': 'assets/images/product2.jpg',
-    },
-    {
-      'id': '3',
-      'name': 'Essential Sweatshirt',
-      'price': 18.00,
-      'originalPrice': 25.00,
-      'quantity': 1,
-      'size': 'S',
-      'color': 'Grey',
-      'image': 'assets/images/product3.jpg',
-    },
-  ];
+  final CartService _cartService = CartService();
+
+  @override
+  void initState() {
+    super.initState();
+    _cartService.addListener(_onCartUpdated);
+  }
+
+  @override
+  void dispose() {
+    _cartService.removeListener(_onCartUpdated);
+    super.dispose();
+  }
+
+  void _onCartUpdated() {
+    setState(() {});
+  }
 
   void _updateQuantity(int index, int newQuantity) {
     if (newQuantity > 0) {
-      setState(() {
-        _cartItems[index]['quantity'] = newQuantity;
-      });
+      _cartService.updateQuantity(index, newQuantity);
+    } else {
+      _removeItem(index);
     }
   }
 
   void _removeItem(int index) {
-    setState(() {
-      _cartItems.removeAt(index);
-    });
+    _cartService.removeItem(index);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Item removed from cart'),
@@ -64,23 +47,10 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  double get _subtotal {
-    return _cartItems.fold(
-      0,
-      (sum, item) => sum + (item['price'] * item['quantity']),
-    );
-  }
-
-  double get _shipping {
-    return _subtotal >= 50 ? 0 : 4.99;
-  }
-
-  double get _total {
-    return _subtotal + _shipping;
-  }
-
   @override
   Widget build(BuildContext context) {
+    final cartItems = _cartService.cartItems;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -88,7 +58,7 @@ class _CartPageState extends State<CartPage> {
           children: [
             const AppHeader(activePage: ''),
             _buildBreadcrumb(),
-            if (_cartItems.isEmpty) _buildEmptyCart() else _buildCartContent(),
+            if (cartItems.isEmpty) _buildEmptyCart() else _buildCartContent(),
             const SizedBox(height: 40),
             const AppFooter(),
           ],
@@ -104,7 +74,7 @@ class _CartPageState extends State<CartPage> {
       child: Row(
         children: [
           TextButton(
-            onPressed: () => Navigator.pushNamed(context, '/'), // Changed to '/'
+            onPressed: () => Navigator.pushNamed(context, '/'),
             child: const Text('Home'),
           ),
           const Text(' > '),
@@ -137,7 +107,7 @@ class _CartPageState extends State<CartPage> {
           ),
           const SizedBox(height: 32),
           ElevatedButton(
-            onPressed: () => Navigator.pushNamed(context, '/'), // Changed to '/'
+            onPressed: () => Navigator.pushNamed(context, '/'),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF4d2963),
               foregroundColor: Colors.white,
@@ -151,6 +121,8 @@ class _CartPageState extends State<CartPage> {
   }
 
   Widget _buildCartContent() {
+    final cartItems = _cartService.cartItems;
+
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Row(
@@ -165,7 +137,7 @@ class _CartPageState extends State<CartPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Shopping Cart (${_cartItems.length} items)',
+                      'Shopping Cart (${cartItems.length} items)',
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -173,9 +145,7 @@ class _CartPageState extends State<CartPage> {
                     ),
                     TextButton.icon(
                       onPressed: () {
-                        setState(() {
-                          _cartItems.clear();
-                        });
+                        _cartService.clearCart();
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Cart cleared'),
@@ -192,7 +162,7 @@ class _CartPageState extends State<CartPage> {
                   ],
                 ),
                 const SizedBox(height: 24),
-                ..._cartItems.asMap().entries.map((entry) {
+                ...cartItems.asMap().entries.map((entry) {
                   return _buildCartItem(entry.key, entry.value);
                 }),
               ],
@@ -358,10 +328,10 @@ class _CartPageState extends State<CartPage> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 24),
-          _buildSummaryRow('Subtotal', _subtotal),
+          _buildSummaryRow('Subtotal', _cartService.subtotal),
           const SizedBox(height: 12),
-          _buildSummaryRow('Shipping', _shipping),
-          if (_shipping == 0) ...[
+          _buildSummaryRow('Shipping', _cartService.shipping),
+          if (_cartService.shipping == 0) ...[
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(8),
@@ -386,7 +356,7 @@ class _CartPageState extends State<CartPage> {
                 ],
               ),
             ),
-          ] else ...[
+          ] else if (_cartService.subtotal > 0) ...[
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(8),
@@ -395,7 +365,7 @@ class _CartPageState extends State<CartPage> {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
-                'Add £${(50 - _subtotal).toStringAsFixed(2)} more for free shipping',
+                'Add £${(50 - _cartService.subtotal).toStringAsFixed(2)} more for free shipping',
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.blue[700],
@@ -406,13 +376,12 @@ class _CartPageState extends State<CartPage> {
           const SizedBox(height: 16),
           const Divider(),
           const SizedBox(height: 16),
-          _buildSummaryRow('Total', _total, isTotal: true),
+          _buildSummaryRow('Total', _cartService.total, isTotal: true),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                // Navigate to checkout
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Proceeding to checkout...'),
@@ -435,7 +404,7 @@ class _CartPageState extends State<CartPage> {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: () => Navigator.pushNamed(context, '/'), // Changed to '/'
+              onPressed: () => Navigator.pushNamed(context, '/'),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 side: const BorderSide(color: Color(0xFF4d2963)),

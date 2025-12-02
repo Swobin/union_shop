@@ -18,20 +18,52 @@ class _CollectionPageState extends State<CollectionPage> {
     'Newest',
   ];
 
-  // List of product images from assets
+  // List of product images from assets - cycling through the 3 available images
   final List<String> _productImages = [
-    'assets/images/product1.jpg',
-    'assets/images/product2.jpg',
-    'assets/images/product3.jpg',
-    'assets/images/product4.jpg',
-    'assets/images/product5.jpg',
-    'assets/images/product6.jpg',
-    'assets/images/product7.jpg',
-    'assets/images/product8.jpg',
-    'assets/images/product9.jpg',
-    'assets/images/product10.jpg',
-    'assets/images/product11.jpg',
-    'assets/images/product12.jpg',
+    'assets/images/limited_t_shirt.png',
+    'assets/images/signature_t_shirt.png',
+    'assets/images/zip_up_hoodie.png',
+    'assets/images/limited_t_shirt.png',
+    'assets/images/signature_t_shirt.png',
+    'assets/images/zip_up_hoodie.png',
+    'assets/images/limited_t_shirt.png',
+    'assets/images/signature_t_shirt.png',
+    'assets/images/zip_up_hoodie.png',
+    'assets/images/limited_t_shirt.png',
+    'assets/images/signature_t_shirt.png',
+    'assets/images/zip_up_hoodie.png',
+  ];
+
+  // Product names for Portsmouth City Collection
+  final List<String> _productNames = [
+    'Portsmouth City T-Shirt',
+    'Portsmouth Signature Tee',
+    'Portsmouth Zip Hoodie',
+    'Portsmouth Limited Edition Shirt',
+    'Portsmouth Classic T-Shirt',
+    'Portsmouth Navy Hoodie',
+    'Portsmouth Crew Neck Tee',
+    'Portsmouth Graphic Shirt',
+    'Portsmouth Premium Hoodie',
+    'Portsmouth Vintage T-Shirt',
+    'Portsmouth Sports Tee',
+    'Portsmouth Essential Hoodie',
+  ];
+
+  // Product prices
+  final List<String> _productPrices = [
+    '£19.99',
+    '£16.99',
+    '£24.99',
+    '£18.99',
+    '£15.99',
+    '£26.99',
+    '£17.99',
+    '£19.99',
+    '£28.99',
+    '£16.99',
+    '£18.99',
+    '£25.99',
   ];
 
   @override
@@ -41,7 +73,7 @@ class _CollectionPageState extends State<CollectionPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const AppHeader(activePage: 'shop'),
+            const AppHeader(activePage: 'collections'),
 
             // Collection banner
             Container(
@@ -122,35 +154,42 @@ class _CollectionPageState extends State<CollectionPage> {
                       children: [
                         Expanded(
                           child: Container(
-                            color: Colors.grey[200],
-                            child: Image.asset(
-                              _productImages[index],
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: Colors.grey[300],
-                                  child: const Icon(
-                                    Icons.image_not_supported,
-                                    size: 50,
-                                    color: Colors.grey,
-                                  ),
-                                );
-                              },
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.asset(
+                                _productImages[index],
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.grey[300],
+                                    child: const Icon(
+                                      Icons.image_not_supported,
+                                      size: 50,
+                                      color: Colors.grey,
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Portsmouth Product ${index + 1}',
+                          _productNames[index],
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
-                          '£19.99',
-                          style: TextStyle(
+                        Text(
+                          _productPrices[index],
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF4d2963),

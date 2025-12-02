@@ -21,20 +21,20 @@ class _SalePageState extends State<SalePage> {
   String _selectedSort = 'Featured';
   final List<String> _sortOptions = ['Featured', 'Price: Low to High', 'Price: High to Low', 'Biggest Discount'];
 
-  // List of product images from assets
+  // List of product images from assets - cycling through the 3 available images
   final List<String> _productImages = [
-    'assets/images/product1.jpg',
-    'assets/images/product2.jpg',
-    'assets/images/product3.jpg',
-    'assets/images/product4.jpg',
-    'assets/images/product5.jpg',
-    'assets/images/product6.jpg',
-    'assets/images/product7.jpg',
-    'assets/images/product8.jpg',
-    'assets/images/product9.jpg',
-    'assets/images/product10.jpg',
-    'assets/images/product11.jpg',
-    'assets/images/product12.jpg',
+    'assets/images/zip_up_hoodie.png',
+    'assets/images/limited_t_shirt.png',
+    'assets/images/signature_t_shirt.png',
+    'assets/images/zip_up_hoodie.png',
+    'assets/images/limited_t_shirt.png',
+    'assets/images/signature_t_shirt.png',
+    'assets/images/zip_up_hoodie.png',
+    'assets/images/limited_t_shirt.png',
+    'assets/images/signature_t_shirt.png',
+    'assets/images/zip_up_hoodie.png',
+    'assets/images/limited_t_shirt.png',
+    'assets/images/signature_t_shirt.png',
   ];
 
   @override
@@ -346,54 +346,26 @@ class _SalePageState extends State<SalePage> {
 
     return Padding(
       padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Sale Items',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1,
-            ),
-          ),
-          const SizedBox(height: 24),
-          // Responsive grid
-          LayoutBuilder(
-            builder: (context, constraints) {
-              int crossAxisCount = 1;
-              if (constraints.maxWidth > 1200) {
-                crossAxisCount = 4;
-              } else if (constraints.maxWidth > 900) {
-                crossAxisCount = 3;
-              } else if (constraints.maxWidth > 600) {
-                crossAxisCount = 2;
-              }
-
-              return GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  crossAxisSpacing: 24,
-                  mainAxisSpacing: 24,
-                  childAspectRatio: 0.7,
-                ),
-                itemCount: products.length,
-                itemBuilder: (context, index) {
-                  final product = products[index];
-                  return _SaleProductCard(
-                    name: product['name'] as String,
-                    image: product['image'] as String,
-                    oldPrice: product['oldPrice'] as String,
-                    salePrice: product['salePrice'] as String,
-                    discountPercent: product['discountPercent'] as int,
-                  );
-                },
-              );
-            },
-          ),
-        ],
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          crossAxisSpacing: 24,
+          mainAxisSpacing: 24,
+          childAspectRatio: 0.7,
+        ),
+        itemCount: products.length,
+        itemBuilder: (context, index) {
+          final product = products[index];
+          return _SaleProductCard(
+            name: product['name'] as String,
+            image: product['image'] as String,
+            oldPrice: product['oldPrice'] as String,
+            salePrice: product['salePrice'] as String,
+            discountPercent: product['discountPercent'] as int,
+          );
+        },
       ),
     );
   }
@@ -532,17 +504,20 @@ class _SaleProductCardState extends State<_SaleProductCard> {
                 fit: StackFit.expand,
                 children: [
                   // Product image
-                  Image.asset(
-                    widget.image,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Colors.grey[200],
-                        child: const Center(
-                          child: Icon(Icons.image_not_supported, color: Colors.grey),
-                        ),
-                      );
-                    },
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.asset(
+                      widget.image,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[200],
+                          child: const Center(
+                            child: Icon(Icons.image_not_supported, color: Colors.grey),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                   // Hover brightness effect
                   AnimatedOpacity(
@@ -561,7 +536,7 @@ class _SaleProductCardState extends State<_SaleProductCard> {
                         borderRadius: BorderRadius.circular(4),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withAlpha((0.2 * 255).round()),
+                            color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -577,7 +552,7 @@ class _SaleProductCardState extends State<_SaleProductCard> {
                       ),
                     ),
                   ),
-                  // "SALE" badge (top right)
+                  // Sale badge (top right)
                   Positioned(
                     top: 12,
                     right: 12,
@@ -588,7 +563,7 @@ class _SaleProductCardState extends State<_SaleProductCard> {
                         borderRadius: BorderRadius.circular(4),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withAlpha((0.2 * 255).round()),
+                            color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -605,38 +580,10 @@ class _SaleProductCardState extends State<_SaleProductCard> {
                       ),
                     ),
                   ),
-                  // "Limited Stock" indicator (bottom left)
-                  Positioned(
-                    bottom: 12,
-                    left: 12,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.orange,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.access_time, size: 14, color: Colors.white),
-                          SizedBox(width: 4),
-                          Text(
-                            'Limited',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
             const SizedBox(height: 12),
-            // Product name
             Text(
               widget.name,
               style: const TextStyle(
@@ -648,41 +595,23 @@ class _SaleProductCardState extends State<_SaleProductCard> {
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 8),
-            // Price display with savings
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
               children: [
-                // Original and sale price
-                Row(
-                  children: [
-                    Text(
-                      widget.oldPrice,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                        decoration: TextDecoration.lineThrough,
-                        decorationThickness: 2,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      widget.salePrice,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                // Savings amount
                 Text(
-                  'Save ${_calculateSavings(widget.oldPrice, widget.salePrice)}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.green[700],
-                    fontWeight: FontWeight.w600,
+                  widget.oldPrice,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    decoration: TextDecoration.lineThrough,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  widget.salePrice,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
                   ),
                 ),
               ],
@@ -691,14 +620,5 @@ class _SaleProductCardState extends State<_SaleProductCard> {
         ),
       ),
     );
-  }
-
-  /// Calculate savings amount from old and sale prices
-  String _calculateSavings(String oldPrice, String salePrice) {
-    // Remove £ symbol and parse
-    final old = double.tryParse(oldPrice.replaceAll('£', '')) ?? 0;
-    final sale = double.tryParse(salePrice.replaceAll('£', '')) ?? 0;
-    final savings = old - sale;
-    return '£${savings.toStringAsFixed(2)}';
   }
 }

@@ -18,16 +18,16 @@ class _EssentialRangePageState extends State<EssentialRangePage> {
     'Biggest Discount',
   ];
 
-  // List of product images from assets
+  // List of product images from assets - cycling through the 3 available images
   final List<String> _productImages = [
-    'assets/images/product1.jpg',
-    'assets/images/product2.jpg',
-    'assets/images/product3.jpg',
-    'assets/images/product4.jpg',
-    'assets/images/product5.jpg',
-    'assets/images/product6.jpg',
-    'assets/images/product7.jpg',
-    'assets/images/product8.jpg',
+    'assets/images/zip_up_hoodie.png',
+    'assets/images/limited_t_shirt.png',
+    'assets/images/signature_t_shirt.png',
+    'assets/images/zip_up_hoodie.png',
+    'assets/images/limited_t_shirt.png',
+    'assets/images/signature_t_shirt.png',
+    'assets/images/zip_up_hoodie.png',
+    'assets/images/limited_t_shirt.png',
   ];
 
   @override
@@ -37,7 +37,7 @@ class _EssentialRangePageState extends State<EssentialRangePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const AppHeader(activePage: 'shop'),
+            const AppHeader(activePage: 'essential-range'),
 
             // Sale banner
             Container(
@@ -174,19 +174,22 @@ class _EssentialRangePageState extends State<EssentialRangePage> {
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
-                              Image.asset(
-                                _productImages[index],
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    color: Colors.grey[300],
-                                    child: const Icon(
-                                      Icons.image_not_supported,
-                                      size: 50,
-                                      color: Colors.grey,
-                                    ),
-                                  );
-                                },
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.asset(
+                                  _productImages[index],
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      color: Colors.grey[300],
+                                      child: const Icon(
+                                        Icons.image_not_supported,
+                                        size: 50,
+                                        color: Colors.grey,
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                               Positioned(
                                 top: 12,
