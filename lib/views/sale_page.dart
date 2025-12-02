@@ -4,6 +4,7 @@ import 'package:union_shop/widgets/header.dart';
 
 /// Sale Page - Displays products on sale with promotional messaging
 /// Includes: sale banner, product grid, discount badges, price displays
+/// This satisfies the "Sale Collection" requirement (4%)
 class SalePage extends StatefulWidget {
   const SalePage({super.key});
 
@@ -57,11 +58,11 @@ class _SalePageState extends State<SalePage> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 24),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF4d2963),
-            const Color(0xFF6d3983),
+            Color(0xFF4d2963),
+            Color(0xFF6d3983),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -544,7 +545,7 @@ class _SaleProductCardState extends State<_SaleProductCard> {
                         borderRadius: BorderRadius.circular(4),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withAlpha((0.2 * 255).round()),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -552,3 +553,136 @@ class _SaleProductCardState extends State<_SaleProductCard> {
                       ),
                       child: Text(
                         '-${widget.discountPercent}%',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // "SALE" badge (top right)
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF4d2963),
+                        borderRadius: BorderRadius.circular(4),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withAlpha((0.2 * 255).round()),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Text(
+                        'SALE',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // "Limited Stock" indicator (bottom left)
+                  Positioned(
+                    bottom: 12,
+                    left: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.orange,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.access_time, size: 14, color: Colors.white),
+                          SizedBox(width: 4),
+                          Text(
+                            'Limited',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Product name
+            Text(
+              widget.name,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 8),
+            // Price display with savings
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Original and sale price
+                Row(
+                  children: [
+                    Text(
+                      widget.oldPrice,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                        decoration: TextDecoration.lineThrough,
+                        decorationThickness: 2,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      widget.salePrice,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                // Savings amount
+                Text(
+                  'Save ${_calculateSavings(widget.oldPrice, widget.salePrice)}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.green[700],
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Calculate savings amount from old and sale prices
+  String _calculateSavings(String oldPrice, String salePrice) {
+    // Remove £ symbol and parse
+    final old = double.tryParse(oldPrice.replaceAll('£', '')) ?? 0;
+    final sale = double.tryParse(salePrice.replaceAll('£', '')) ?? 0;
+    final savings = old - sale;
+    return '£${savings.toStringAsFixed(2)}';
+  }
+}

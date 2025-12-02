@@ -7,7 +7,7 @@ import 'package:union_shop/views/sale_page.dart';
 import 'package:union_shop/views/collection_page.dart';
 import 'package:union_shop/views/essential_range_page.dart';
 import 'package:union_shop/views/product_detail.dart';
-import 'package:union_shop/views/auth_page.dart'; // ADD THIS IMPORT
+import 'package:union_shop/views/auth_page.dart';
 
 void main() {
   runApp(const UnionShopApp());
@@ -31,7 +31,7 @@ class UnionShopApp extends StatelessWidget {
         '/collection': (context) => const CollectionPage(),
         '/essential-range': (context) => const EssentialRangePage(),
         '/product-detail': (context) => const ProductDetailPage(),
-        '/auth': (context) => const AuthPage(), // ADD THIS ROUTE
+        '/auth': (context) => const AuthPage(),
         '/about': (context) => const AboutPage(),
         '/print-shack-about': (context) => const PrintShackAboutPage(),
         '/personalisation': (context) => const PersonalisationPage(),
@@ -81,11 +81,7 @@ class HomeScreen extends StatelessWidget {
           child: Text(c, style: const TextStyle(fontFamily: 'Roboto')),
         );
       }).toList(),
-    ).then((selected) {
-      if (selected != null) {
-        // currently just close the menu. Add navigation/filtering here later.
-      }
-    });
+    );
   }
 
   // show a popup menu positioned under The Print Shack button
@@ -116,6 +112,7 @@ class HomeScreen extends StatelessWidget {
         );
       }).toList(),
     ).then((selected) {
+      if (!context.mounted) return; // FIX: Check if context is still valid
       if (selected == null) return;
       if (selected == 'About') {
         Navigator.pushNamed(context, '/print-shack-about');
@@ -413,7 +410,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.7),
+                          color: Colors.black.withAlpha((0.7 * 255).round()),
                         ),
                       ),
                     ),
@@ -612,6 +609,7 @@ class HomeScreen extends StatelessWidget {
                       crossAxisCount: MediaQuery.of(context).size.width > 600 ? 2 : 1,
                       crossAxisSpacing: 24,
                       mainAxisSpacing: 48,
+                      childAspectRatio: 0.8, // Fixed: prevents overflow
                       children: const [
                         ProductCard(
                           title: 'Portsmouth City Hoodie',
@@ -664,18 +662,21 @@ class HomeScreen extends StatelessWidget {
                   width: double.infinity,
                   color: Colors.grey[50],
                   padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Opening Hours column (single multiline Text instead of many Text widgets)
-                      const Expanded(
-                        child: Column(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      if (constraints.maxWidth > 800) {
+                        // Desktop: 3 columns
+                        return Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Opening Hours', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                            SizedBox(height: 12),
-                            Text(
-                              '''❄️ Winter Break Closure Dates ❄️
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Opening Hours', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                  SizedBox(height: 12),
+                                  Text(
+                                    '''❄️ Winter Break Closure Dates ❄️
 
 Closing 4pm 19/12/2025
 
@@ -687,77 +688,130 @@ Last post date: 12pm on 18/12/2025
 
 Monday - Friday 10am - 4pm
 
-(Outside of Term Time / Consolidation
-Weeks)
-
+(Outside of Term Time)
 Monday - Friday 10am - 3pm
 
 Purchase online 24/7''',
-                              style: TextStyle(fontSize: 14),
-                              textAlign: TextAlign.left,
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 32),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Help and Information',
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                  SizedBox(height: 12),
+                                  Text('Search'),
+                                  SizedBox(height: 6),
+                                  Text('Terms & Conditions'),
+                                  SizedBox(height: 6),
+                                  Text('Privacy Policy'),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 32),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('Latest Offers',
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                  const SizedBox(height: 12),
+                                  // simple email input + subscribe button visual
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                          height: 40,
+                                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            border: Border.all(color: Colors.grey.shade300),
+                                          ),
+                                          child: const Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text('Email address', style: TextStyle(color: Colors.black54)),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        height: 40,
+                                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                                        color: const Color(0xFF4d2963),
+                                        alignment: Alignment.center,
+                                        child: const Text(
+                                          'SUBSCRIBE',
+                                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
-                        ),
-                      ),
-
-                      // Help & Information column
-                      const Expanded(
-                        child: Column(
+                        );
+                      } else {
+                        // Mobile: stacked
+                        return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Help and Information', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                            SizedBox(height: 12),
-                            Text('Search'),
-                            SizedBox(height: 6),
-                            Text('Terms & Conditions of Sale'),
-                            SizedBox(height: 6),
-                            Text('Policy'),
-                          ],
-                        ),
-                      ),
+                            const Text('Opening Hours', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            const SizedBox(height: 12),
+                            const Text(
+                              '''❄️ Winter Break Closure Dates ❄️
 
-                      // Latest Offers / Newsletter column
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+Closing 4pm 19/12/2025
+
+Reopening 10am 05/01/2026''',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            const SizedBox(height: 24),
+                            const Text('Help and Information',
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            const SizedBox(height: 12),
+                            const Text('Search'),
+                            const SizedBox(height: 6),
+                            const Text('Terms & Conditions'),
+                            const SizedBox(height: 24),
                             const Text('Latest Offers', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                             const SizedBox(height: 12),
-                            // simple email input + subscribe button visual
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    height: 40,
-                                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border: Border.all(color: Colors.grey.shade300),
-                                    ),
-                                    child: const Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text('Email address', style: TextStyle(color: Colors.black54)),
-                                    ),
+                            const TextField(
+                              decoration: InputDecoration(
+                                hintText: 'Email address',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.zero,
+                                ),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                filled: true,
+                                fillColor: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF4d2963),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.zero,
                                   ),
                                 ),
-                                const SizedBox(width: 8),
-                                Container(
-                                  height: 40,
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                                  color: const Color(0xFF4d2963),
-                                  alignment: Alignment.center,
-                                  child: const Text(
-                                    'SUBSCRIBE',
-                                    style: TextStyle(
-                                        color: Colors.white, fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
+                                child: const Text('Subscribe'),
+                              ),
                             ),
                           ],
-                        ),
-                      ),
-                    ],
+                        );
+                      }
+                    },
                   ),
                 ),
 
@@ -770,8 +824,8 @@ Purchase online 24/7''',
                   color: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // left: social icons (placeholders)
                       Row(
                         children: [
                           Container(
@@ -790,18 +844,7 @@ Purchase online 24/7''',
                         ],
                       ),
 
-                      const Spacer(),
-
-                      // right: payment badges placeholders
-                      Row(
-                        children: [
-                          Container(width: 40, height: 24, color: Colors.grey.shade100),
-                          const SizedBox(width: 8),
-                          Container(width: 40, height: 24, color: Colors.grey.shade100),
-                          const SizedBox(width: 8),
-                          const Text('© 2025, upsu-store'),
-                        ],
-                      ),
+                      const Text('© 2025, upsu-store'),
                     ],
                   ),
                 ),
@@ -830,7 +873,7 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/product');
+        Navigator.pushNamed(context, '/product-detail');
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -849,31 +892,28 @@ class ProductCard extends StatelessWidget {
               },
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 4),
-              Text(
-                title,
-                style: const TextStyle(fontSize: 14, color: Colors.black),
-                maxLines: 2,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                price,
-                style: const TextStyle(fontSize: 13, color: Colors.grey),
-              ),
-            ],
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 14, color: Colors.black),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            price,
+            style: const TextStyle(fontSize: 13, color: Colors.grey),
           ),
         ],
-        ));
+      ),
+    );
   }
 }
 
 class HoverUnderlineButton extends StatefulWidget {
   final String label;
   final VoidCallback onPressed;
-  final bool active; // new
+  final bool active;
 
   const HoverUnderlineButton({
     super.key,
@@ -900,7 +940,7 @@ class _HoverUnderlineButtonState extends State<HoverUnderlineButton> {
         onTap: widget.onPressed,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // reduced (was 24,12)
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(color: underlineColor, width: 2),
@@ -910,9 +950,9 @@ class _HoverUnderlineButtonState extends State<HoverUnderlineButton> {
             widget.label,
             style: const TextStyle(
               fontFamily: 'Roboto',
-              fontSize: 14, // was 16
+              fontSize: 14,
               fontWeight: FontWeight.normal,
-              letterSpacing: 0.8, // slight reduction
+              letterSpacing: 0.8,
               color: Colors.black,
             ),
           ),
@@ -928,6 +968,7 @@ class HoverUnderlineImageTile extends StatefulWidget {
   final VoidCallback onTap;
   final String? oldPrice;
   final String? newPrice;
+
   const HoverUnderlineImageTile({
     super.key,
     required this.label,
@@ -946,7 +987,7 @@ class _HoverUnderlineImageTileState extends State<HoverUnderlineImageTile> {
 
   @override
   Widget build(BuildContext context) {
-    final underlineColor = (_hovering) ? const Color(0xFF4d2963) : Colors.transparent;
+    final underlineColor = _hovering ? const Color(0xFF4d2963) : Colors.transparent;
 
     // choose AssetImage for local assets, NetworkImage otherwise
     final ImageProvider<Object> imageProvider = widget.imageUrl.startsWith('assets/')
@@ -954,102 +995,103 @@ class _HoverUnderlineImageTileState extends State<HoverUnderlineImageTile> {
         : NetworkImage(widget.imageUrl) as ImageProvider<Object>;
 
     return MouseRegion(
-        onEnter: (_) => setState(() => _hovering = true),
-        onExit: (_) => setState(() => _hovering = false),
-        child: GestureDetector(
-          onTap: widget.onTap,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AspectRatio(
-                aspectRatio: 16 / 9,
-                // Use a Stack: static Image + animated overlay for brightness (no AnimatedContainer on decoration)
-                child: ClipRect(
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image(
-                        image: imageProvider,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey[200],
-                            child: const Center(
-                              child: Icon(Icons.image_not_supported, color: Colors.grey),
-                            ),
-                          );
-                        },
-                      ),
-                      // Brighten overlay on hover using AnimatedOpacity (smooth, doesn't rebuild image)
-                      AnimatedOpacity(
-                        duration: const Duration(milliseconds: 150),
-                        opacity: _hovering ? 0.18 : 0.0,
-                        child: Container(color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: underlineColor, width: 2),
-                  ),
-                ),
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(
-                  widget.label,
-                  style: const TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
-                    letterSpacing: 0.8,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              // Price rendering: supports (old + new) or single price (newPrice)
-              if (widget.newPrice != null && widget.oldPrice != null) ...[
-                const SizedBox(height: 6),
-                Row(
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              // Use a Stack: static Image + animated overlay for brightness (no AnimatedContainer on decoration)
+              child: ClipRect(
+                child: Stack(
+                  fit: StackFit.expand,
                   children: [
-                    Text(
-                      widget.oldPrice!,
-                      style: const TextStyle(
-                        fontFamily: 'Roboto',
-                        fontSize: 15,
-                        color: Colors.grey,
-                        decoration: TextDecoration.lineThrough,
-                      ),
+                    Image(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[200],
+                          child: const Center(
+                            child: Icon(Icons.image_not_supported, color: Colors.grey),
+                          ),
+                        );
+                      },
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      widget.newPrice!,
-                      style: const TextStyle(
-                        fontFamily: 'Roboto',
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF4d2963),
-                      ),
+                    // Brighten overlay on hover using AnimatedOpacity (smooth, doesn't rebuild image)
+                    AnimatedOpacity(
+                      duration: const Duration(milliseconds: 150),
+                      opacity: _hovering ? 0.18 : 0.0,
+                      child: Container(color: Colors.white),
                     ),
                   ],
                 ),
-              ] else if (widget.newPrice != null) ...[
-                const SizedBox(height: 6),
-                Text(
-                  widget.newPrice!,
-                  style: const TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4d2963),
-                  ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: underlineColor, width: 2),
                 ),
-              ],
+              ),
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text(
+                widget.label,
+                style: const TextStyle(
+                  fontFamily: 'Roboto',
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                  letterSpacing: 0.8,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            // Price rendering: supports (old + new) or single price (newPrice)
+            if (widget.newPrice != null && widget.oldPrice != null) ...[
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Text(
+                    widget.oldPrice!,
+                    style: const TextStyle(
+                      fontFamily: 'Roboto',
+                      fontSize: 15,
+                      color: Colors.grey,
+                      decoration: TextDecoration.lineThrough,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    widget.newPrice!,
+                    style: const TextStyle(
+                      fontFamily: 'Roboto',
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4d2963),
+                    ),
+                  ),
+                ],
+              ),
+            ] else if (widget.newPrice != null) ...[
+              const SizedBox(height: 6),
+              Text(
+                widget.newPrice!,
+                style: const TextStyle(
+                  fontFamily: 'Roboto',
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4d2963),
+                ),
+              ),
             ],
-          ),
-        ));
+          ],
+        ),
+      ),
+    );
   }
 }
