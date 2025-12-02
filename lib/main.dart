@@ -6,7 +6,8 @@ import 'package:union_shop/views/personalisation_page.dart';
 import 'package:union_shop/views/sale_page.dart';
 import 'package:union_shop/views/collection_page.dart';
 import 'package:union_shop/views/essential_range_page.dart';
-import 'package:union_shop/views/product_detail_page.dart'; // ADD THIS IMPORT
+import 'package:union_shop/views/product_detail.dart';
+import 'package:union_shop/views/auth_page.dart'; // ADD THIS IMPORT
 
 void main() {
   runApp(const UnionShopApp());
@@ -29,7 +30,8 @@ class UnionShopApp extends StatelessWidget {
         '/product': (context) => const ProductPage(),
         '/collection': (context) => const CollectionPage(),
         '/essential-range': (context) => const EssentialRangePage(),
-        '/product-detail': (context) => const ProductDetailPage(), // ADD THIS ROUTE
+        '/product-detail': (context) => const ProductDetailPage(),
+        '/auth': (context) => const AuthPage(), // ADD THIS ROUTE
         '/about': (context) => const AboutPage(),
         '/print-shack-about': (context) => const PrintShackAboutPage(),
         '/personalisation': (context) => const PersonalisationPage(),
@@ -373,7 +375,7 @@ class HomeScreen extends StatelessWidget {
                                   icon: const Icon(Icons.person_outline, size: 18, color: Colors.grey),
                                   padding: const EdgeInsets.all(8),
                                   constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                                  onPressed: placeholderCallbackForButtons,
+                                  onPressed: () => Navigator.pushNamed(context, '/auth'), // UPDATE THIS LINE
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.shopping_bag_outlined, size: 18, color: Colors.grey),
@@ -864,8 +866,7 @@ class ProductCard extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
+        ));
   }
 }
 

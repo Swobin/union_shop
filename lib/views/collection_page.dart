@@ -12,8 +12,8 @@ class CollectionPage extends StatefulWidget {
 class _CollectionPageState extends State<CollectionPage> {
   // Filter state
   String _selectedSort = 'Featured';
-  Set<String> _selectedSizes = {};
-  Set<String> _selectedColors = {};
+  final Set<String> _selectedSizes = {};
+  final Set<String> _selectedColors = {};
   RangeValues _priceRange = const RangeValues(0, 50);
 
   // Available filter options

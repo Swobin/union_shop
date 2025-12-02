@@ -583,11 +583,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         child: Column(
           children: [
             // Tab headers
-            TabBar(
-              labelColor: const Color(0xFF4d2963),
+            const TabBar(
+              labelColor: Color(0xFF4d2963),
               unselectedLabelColor: Colors.grey,
-              indicatorColor: const Color(0xFF4d2963),
-              tabs: const [
+              indicatorColor: Color(0xFF4d2963),
+              tabs: [
                 Tab(text: 'DESCRIPTION'),
                 Tab(text: 'DETAILS'),
                 Tab(text: 'REVIEWS'),
