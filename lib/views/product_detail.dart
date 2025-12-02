@@ -24,20 +24,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     Colors.red,
   ];
 
-  // Product images from assets
+  // Product images from assets - using only existing images
   final List<String> _productImages = [
-    'assets/images/product1.jpg',
-    'assets/images/product2.jpg',
-    'assets/images/product3.jpg',
-    'assets/images/product4.jpg',
+    'assets/images/hoodie.jpg',
+    'assets/images/hoodie.jpg',
+    'assets/images/hoodie.jpg',
+    'assets/images/hoodie.jpg',
   ];
 
-  // Related products images
+  // Related products images - using only existing images
   final List<String> _relatedProductImages = [
-    'assets/images/product2.jpg',
-    'assets/images/product3.jpg',
-    'assets/images/product4.jpg',
-    'assets/images/product5.jpg',
+    'assets/images/tshirt.jpg',
+    'assets/images/hoodie.jpg',
+    'assets/images/tshirt.jpg',
+    'assets/images/hoodie.jpg',
   ];
 
   @override
@@ -225,10 +225,19 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               child: ElevatedButton.icon(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Added Essential Hoodie to basket')),
+                    SnackBar(
+                      content: const Text('Added Essential Hoodie to cart'),
+                      duration: const Duration(seconds: 2),
+                      action: SnackBarAction(
+                        label: 'VIEW CART',
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/cart');
+                        },
+                      ),
+                    ),
                   );
                 },
-                icon: const Icon(Icons.shopping_bag_outlined),
+                icon: const Icon(Icons.shopping_bag),
                 label: const Text('ADD TO BASKET'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4d2963),
@@ -381,11 +390,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       length: 3,
       child: Column(
         children: [
-          TabBar(
-            labelColor: const Color(0xFF4d2963),
+          const TabBar(
+            labelColor: Color(0xFF4d2963),
             unselectedLabelColor: Colors.grey,
-            indicatorColor: const Color(0xFF4d2963),
-            tabs: const [
+            indicatorColor: Color(0xFF4d2963),
+            tabs: [
               Tab(text: 'DESCRIPTION'),
               Tab(text: 'DETAILS'),
               Tab(text: 'REVIEWS'),

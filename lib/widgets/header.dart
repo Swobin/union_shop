@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:union_shop/widgets/hover_underline_button.dart';
 
 // Reusable header widget with logo and navigation
 class AppHeader extends StatelessWidget {
@@ -7,265 +6,197 @@ class AppHeader extends StatelessWidget {
 
   const AppHeader({super.key, required this.activePage});
 
-  void _navigateTo(BuildContext context, String route) {
-    if (ModalRoute.of(context)?.settings.name != route) {
-      Navigator.pushNamed(context, route);
-    }
-  }
-
-  // Mobile dropdown menu positioned to the right
-  void _showMobileMenu(BuildContext context, BuildContext buttonContext) {
-    final overlay = Overlay.of(context);
-    late OverlayEntry overlayEntry;
-
-    overlayEntry = OverlayEntry(
-      builder: (context) => Stack(
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withValues(alpha: 0.1),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Transparent barrier to close menu when tapping outside
-          Positioned.fill(
-            child: GestureDetector(
-              onTap: () => overlayEntry.remove(),
-              child: Container(color: Colors.transparent),
+          // Logo with Image
+          InkWell(
+            onTap: () => Navigator.pushNamed(context, '/'),
+            child: Row(
+              children: [
+                Image.network(
+                  'https://shop.upsu.net/cdn/shop/files/upsu_300x300.png?v=1614735854',
+                  height: 50,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Text(
+                      'UNION SHOP',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF4d2963),
+                      ),
+                    );
+                  },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const SizedBox(
+                      height: 50,
+                      width: 50,
+                      child: Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
-          // Menu positioned on top right
-          Positioned(
-            top: 120,
-            right: 20,
-            child: Material(
-              elevation: 8,
-              borderRadius: BorderRadius.circular(8),
-              child: Container(
-                width: 250,
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height - 140,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ListTile(
-                        title: const Text('Home'),
-                        onTap: () {
-                          overlayEntry.remove();
-                          _navigateTo(context, '/');
-                        },
-                      ),
-                      const Divider(height: 1),
-
-                      // Shop with expansion
-                      ExpansionTile(
-                        title: const Text('Shop'),
-                        children: [
-                          'Clothing',
-                          'Merchandise',
-                          'Halloween',
-                          'Signature & Essential Range',
-                          'Portsmouth City Collection',
-                          'Pride Collection',
-                          'Graduation',
-                        ]
-                            .map((category) => ListTile(
-                                  dense: true,
-                                  title: Text(category, style: const TextStyle(fontSize: 14)),
-                                  onTap: () {
-                                    overlayEntry.remove();
-                                    // Add category navigation here
-                                  },
-                                ))
-                            .toList(),
-                      ),
-                      const Divider(height: 1),
-
-                      // The Print Shack with expansion
-                      ExpansionTile(
-                        title: const Text('The Print Shack'),
-                        children: [
-                          ListTile(
-                            dense: true,
-                            title: const Text('About', style: TextStyle(fontSize: 14)),
-                            onTap: () {
-                              overlayEntry.remove();
-                              _navigateTo(context, '/print-shack-about');
-                            },
-                          ),
-                          ListTile(
-                            dense: true,
-                            title: const Text('Personalisation', style: TextStyle(fontSize: 14)),
-                            onTap: () {
-                              overlayEntry.remove();
-                              _navigateTo(context, '/personalisation');
-                            },
-                          ),
-                        ],
-                      ),
-                      const Divider(height: 1),
-
-                      ListTile(
-                        title: const Text('SALE!'),
-                        onTap: () {
-                          overlayEntry.remove();
-                          _navigateTo(context, '/sale');
-                        },
-                      ),
-                      const Divider(height: 1),
-
-                      ListTile(
-                        title: const Text('About'),
-                        onTap: () {
-                          overlayEntry.remove();
-                          _navigateTo(context, '/about');
-                        },
-                      ),
-                    ],
-                  ),
-                ),
+          // Navigation Links
+          Row(
+            children: [
+              _buildNavButton(
+                context,
+                'Home',
+                activePage == '',
+                () => Navigator.pushNamed(context, '/'),
               ),
-            ),
+              const SizedBox(width: 24),
+              _buildDropdownMenu(
+                context,
+                'Shop',
+                activePage == 'collections',
+                [
+                  {'label': 'Clothing', 'route': '/collections'},
+                  {'label': 'Merchandise', 'route': '/collections'},
+                  {'label': 'Halloween', 'route': '/collections'},
+                  {'label': 'Signature & Essential Range', 'route': '/essential-range'},
+                  {'label': 'Portsmouth City Collection', 'route': '/collections'},
+                  {'label': 'Pride Collection', 'route': '/collections'},
+                  {'label': 'Graduation', 'route': '/collections'},
+                ],
+              ),
+              const SizedBox(width: 24),
+              _buildDropdownMenu(
+                context,
+                'The Print Shack',
+                activePage == 'print-shack',
+                [
+                  {'label': 'About', 'route': '/print-shack-about'},
+                  {'label': 'Personalisation', 'route': '/personalisation'},
+                ],
+              ),
+              const SizedBox(width: 24),
+              _buildNavButton(
+                context,
+                'SALE!',
+                activePage == 'sale',
+                () => Navigator.pushNamed(context, '/sale'),
+              ),
+              const SizedBox(width: 24),
+              _buildNavButton(
+                context,
+                'About',
+                activePage == 'about',
+                () {
+                  // Navigate to about page when created
+                },
+              ),
+            ],
+          ),
+          // Icons
+          Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  // Search functionality
+                },
+                icon: const Icon(Icons.search),
+              ),
+              IconButton(
+                onPressed: () {
+                  // User account
+                },
+                icon: const Icon(Icons.person_outline),
+              ),
+              IconButton(
+                onPressed: () => Navigator.pushNamed(context, '/cart'),
+                icon: const Icon(Icons.shopping_bag_outlined),
+                tooltip: 'Cart',
+              ),
+            ],
           ),
         ],
       ),
     );
-
-    overlay.insert(overlayEntry);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      height: 120,
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            color: const Color(0xFF4d2963),
-            child: const Text(
-              'BIG SALE! OUR ESSENTIAL RANGE HAS DROPPED IN PRICE! OVER 20% OFF COME GRAB YOURS WHILE STOCK LASTS!',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Roboto',
-                color: Colors.white,
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+  Widget _buildNavButton(
+    BuildContext context,
+    String text,
+    bool isActive,
+    VoidCallback onPressed,
+  ) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onPressed,
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+            color: isActive ? const Color(0xFF4d2963) : Colors.black87,
           ),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: () => _navigateTo(context, '/'),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.network(
-                          'https://shop.upsu.net/cdn/shop/files/upsu_300x300.png?v=1614735854',
-                          height: 44,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Colors.grey[300],
-                              width: 44,
-                              height: 44,
-                              child: const Center(
-                                child: Icon(Icons.image_not_supported, color: Colors.grey),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-
-                  // Responsive navigation: full buttons on wide, hidden on mobile
-                  Builder(builder: (navCtx) {
-                    final isWide = MediaQuery.of(navCtx).size.width > 760;
-                    if (isWide) {
-                      // Desktop/tablet view - show all buttons
-                      return Row(
-                        children: [
-                          HoverUnderlineButton(
-                            label: 'Home',
-                            onPressed: () => _navigateTo(context, '/'),
-                            active: activePage == 'home',
-                          ),
-                          const SizedBox(width: 16),
-                          HoverUnderlineButton(
-                            label: 'Shop',
-                            onPressed: () => _navigateTo(context, '/product'),
-                            active: activePage == 'shop',
-                          ),
-                          const SizedBox(width: 16),
-                          HoverUnderlineButton(
-                            label: 'The Print Shack',
-                            onPressed: () => _navigateTo(context, '/print-shack-about'),
-                            active: activePage == 'print-shack',
-                          ),
-                          const SizedBox(width: 16),
-                          HoverUnderlineButton(
-                            label: 'SALE!',
-                            onPressed: () => _navigateTo(context, '/sale'),
-                            active: activePage == 'sale',
-                          ),
-                          const SizedBox(width: 16),
-                          HoverUnderlineButton(
-                            label: 'About',
-                            onPressed: () => _navigateTo(context, '/about'),
-                            active: activePage == 'about',
-                          ),
-                        ],
-                      );
-                    } else {
-                      // Mobile view - show nothing here (menu will be on the right)
-                      return const SizedBox.shrink();
-                    }
-                  }),
-
-                  const Spacer(),
-
-                  // Right side icons (always visible)
-                  IconButton(
-                    icon: const Icon(Icons.search, size: 18, color: Colors.grey),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.person_outline, size: 18, color: Colors.grey),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.shopping_bag_outlined, size: 18, color: Colors.grey),
-                    onPressed: () {},
-                  ),
-
-                  // Mobile hamburger menu (only on small screens, appears after shopping bag)
-                  Builder(builder: (buttonCtx) {
-                    final isMobile = MediaQuery.of(buttonCtx).size.width <= 760;
-                    if (isMobile) {
-                      return IconButton(
-                        icon: const Icon(Icons.menu, size: 24, color: Colors.grey),
-                        onPressed: () => _showMobileMenu(context, buttonCtx),
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  }),
-                ],
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildDropdownMenu(
+    BuildContext context,
+    String text,
+    bool isActive,
+    List<Map<String, String>> items,
+  ) {
+    return PopupMenuButton<String>(
+      offset: const Offset(0, 40),
+      onSelected: (String route) {
+        Navigator.pushNamed(context, route);
+      },
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Row(
+          children: [
+            Text(
+              text,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                color: isActive ? const Color(0xFF4d2963) : Colors.black87,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              Icons.arrow_drop_down,
+              size: 20,
+              color: isActive ? const Color(0xFF4d2963) : Colors.black87,
+            ),
+          ],
+        ),
+      ),
+      itemBuilder: (BuildContext context) {
+        return items.map((item) {
+          return PopupMenuItem<String>(
+            value: item['route'],
+            child: Text(item['label']!),
+          );
+        }).toList();
+      },
     );
   }
 }

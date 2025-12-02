@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:union_shop/views/product_page.dart';
-import 'package:union_shop/views/about_page.dart';
-import 'package:union_shop/views/print_shack_about.dart';
-import 'package:union_shop/views/personalisation_page.dart';
-import 'package:union_shop/views/sale_page.dart';
 import 'package:union_shop/views/collection_page.dart';
 import 'package:union_shop/views/essential_range_page.dart';
+import 'package:union_shop/views/sale_page.dart';
+import 'package:union_shop/views/personalisation_page.dart';
+import 'package:union_shop/views/print_shack_about.dart';
 import 'package:union_shop/views/product_detail.dart';
-import 'package:union_shop/views/auth_page.dart';
+import 'package:union_shop/views/cart.dart';
+import 'package:union_shop/widgets/header.dart';
+import 'package:union_shop/widgets/footer.dart';
 
 void main() {
-  runApp(const UnionShopApp());
+  runApp(const MyApp());
 }
 
-class UnionShopApp extends StatelessWidget {
-  const UnionShopApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,1073 +22,355 @@ class UnionShopApp extends StatelessWidget {
       title: 'Union Shop',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'Roboto',
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4d2963)),
+        useMaterial3: true,
+        fontFamily: 'Roboto',
       ),
-      home: const HomeScreen(),
+      initialRoute: '/',
       routes: {
-        '/product': (context) => const ProductPage(),
-        '/collection': (context) => const CollectionPage(),
+        '/': (context) => const HomePage(),
+        '/collections': (context) => const CollectionPage(),
         '/essential-range': (context) => const EssentialRangePage(),
-        '/product-detail': (context) => const ProductDetailPage(),
-        '/auth': (context) => const AuthPage(),
-        '/about': (context) => const AboutPage(),
-        '/print-shack-about': (context) => const PrintShackAboutPage(),
-        '/personalisation': (context) => const PersonalisationPage(),
         '/sale': (context) => const SalePage(),
+        '/personalisation': (context) => const PersonalisationPage(),
+        '/print-shack-about': (context) => const PrintShackAboutPage(),
+        '/product-detail': (context) => const ProductDetailPage(),
+        '/cart': (context) => const CartPage(),
       },
     );
   }
 }
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  // show a popup menu positioned under the Shop button (no new route)
-  void showShopCategories(BuildContext context, BuildContext buttonContext) {
-    final categories = <String>[
-      'Clothing',
-      'Merchandise',
-      'Halloween',
-      'Signature & Essential Range',
-      'Portsmouth City Collection',
-      'Pride Collection',
-      'Graduation',
-    ];
-
-    // compute a RelativeRect that starts just below the Shop button so the menu does not cover it
-    final RenderBox button = buttonContext.findRenderObject() as RenderBox;
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-
-    final Offset buttonTopLeft = button.localToGlobal(Offset.zero, ancestor: overlay);
-    final Offset buttonBottomLeft = button.localToGlobal(Offset(0, button.size.height), ancestor: overlay);
-
-    const double gap = 6.0;
-    final double left = buttonTopLeft.dx;
-    final double top = buttonBottomLeft.dy + gap;
-    final double right = overlay.size.width - (left + button.size.width);
-    final double bottom = overlay.size.height - top;
-
-    final RelativeRect position = RelativeRect.fromLTRB(left, top, right, bottom);
-
-    showMenu<String>(
-      context: context,
-      position: position,
-      items: categories.map((c) {
-        return PopupMenuItem<String>(
-          value: c,
-          // Removed the trailing chevron so only the label shows
-          child: Text(c, style: const TextStyle(fontFamily: 'Roboto')),
-        );
-      }).toList(),
-    );
-  }
-
-  // show a popup menu positioned under The Print Shack button
-  void showPrintShackMenu(BuildContext context, BuildContext buttonContext) {
-    final items = <String>['About', 'Personalisation'];
-
-    final RenderBox button = buttonContext.findRenderObject() as RenderBox;
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-
-    final Offset buttonTopLeft = button.localToGlobal(Offset.zero, ancestor: overlay);
-    final Offset buttonBottomLeft = button.localToGlobal(Offset(0, button.size.height), ancestor: overlay);
-
-    const double gap = 6.0;
-    final double left = buttonTopLeft.dx;
-    final double top = buttonBottomLeft.dy + gap;
-    final double right = overlay.size.width - (left + button.size.width);
-    final double bottom = overlay.size.height - top;
-
-    final RelativeRect position = RelativeRect.fromLTRB(left, top, right, bottom);
-
-    showMenu<String>(
-      context: context,
-      position: position,
-      items: items.map((label) {
-        return PopupMenuItem<String>(
-          value: label,
-          child: Text(label, style: const TextStyle(fontFamily: 'Roboto')),
-        );
-      }).toList(),
-    ).then((selected) {
-      if (!context.mounted) return; // FIX: Check if context is still valid
-      if (selected == null) return;
-      if (selected == 'About') {
-        Navigator.pushNamed(context, '/print-shack-about');
-      } else if (selected == 'Personalisation') {
-        Navigator.pushNamed(context, '/personalisation');
-      }
-    });
-  }
-
-  // New: mobile menu (used by hamburger on small screens)
-  void showMobileMenu(BuildContext context) {
-    final categories = <String>[
-      'Clothing',
-      'Merchandise',
-      'Halloween',
-      'Signature & Essential Range',
-      'Portsmouth City Collection',
-      'Pride Collection',
-      'Graduation',
-    ];
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // header bar for sheet
-                  Row(
-                    children: [
-                      const Text('Menu', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.pop(ctx),
-                      ),
-                    ],
-                  ),
-                  const Divider(),
-                  ListTile(
-                    title: const Text('Home'),
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      Navigator.pushNamedAndRemoveUntil(context, '/', (r) => false);
-                    },
-                  ),
-
-                  // Shop with expansion for categories
-                  ExpansionTile(
-                    title: const Text('Shop'),
-                    children: categories
-                        .map((c) => ListTile(
-                              title: Text(c),
-                              onTap: () {
-                                Navigator.pop(ctx);
-                                // Add navigation/filtering later; currently close sheet
-                                // Navigator.pushNamed(context, '/product', arguments: c);
-                              },
-                            ))
-                        .toList(),
-                  ),
-
-                  // The Print Shack submenu
-                  ExpansionTile(
-                    title: const Text('The Print Shack'),
-                    children: [
-                      ListTile(
-                        title: const Text('About'),
-                        onTap: () {
-                          Navigator.pop(ctx);
-                          Navigator.pushNamed(context, '/print-shack-about');
-                        },
-                      ),
-                      ListTile(
-                        title: const Text('Personalisation'),
-                        onTap: () {
-                          Navigator.pop(ctx);
-                          Navigator.pushNamed(context, '/personalisation');
-                        },
-                      ),
-                    ],
-                  ),
-
-                  ListTile(
-                    title: const Text('SALE!'),
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      Navigator.pushNamed(context, '/sale');
-                    },
-                  ),
-
-                  ListTile(
-                    title: const Text('About'),
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      Navigator.pushNamed(context, '/about');
-                    },
-                  ),
-
-                  const SizedBox(height: 12),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void navigateToHome(BuildContext context) {
-    Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-  }
-
-  void navigateToProduct(BuildContext context) {
-    Navigator.pushNamed(context, '/product');
-  }
-
-  void placeholderCallbackForButtons() {
-    // This is the event handler for buttons that don't work yet
-  }
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header
-            Container(
-              height: 120,
-              color: Colors.white,
-              child: Column(
-                children: [
-                  // Top banner
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    color: const Color(0xFF4d2963),
-                    child: const Text(
-                      'BIG SALE! OUR ESSENTIAL RANGE HAS DROPPED IN PRICE! OVER 20% OFF COME GRAB YOURS WHILE STOCK LASTS!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Roboto',
-                        color: Colors.white,
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  // Main header
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            child: GestureDetector(
-                              onTap: () {
-                                navigateToHome(context);
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.network(
-                                  'https://shop.upsu.net/cdn/shop/files/upsu_300x300.png?v=1614735854',
-                                  height: 44,
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      color: Colors.grey[300],
-                                      width: 44,
-                                      height: 44,
-                                      child: const Center(
-                                        child: Icon(Icons.image_not_supported, color: Colors.grey),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                          const Spacer(),
+            const AppHeader(activePage: ''),
+            _buildHeroSection(context),
+            const SizedBox(height: 60),
+            _buildEssentialRange(context),
+            const SizedBox(height: 60),
+            _buildSignatureRange(context),
+            const SizedBox(height: 60),
+            _buildPortsmouthCityCollection(context),
+            const SizedBox(height: 60),
+            const AppFooter(),
+          ],
+        ),
+      ),
+    );
+  }
 
-                          // Responsive navigation: full buttons on wide, single menu on narrow
-                          Builder(builder: (navCtx) {
-                            final isWide = MediaQuery.of(navCtx).size.width > 760;
-                            if (isWide) {
-                              return Row(
-                                children: [
-                                  HoverUnderlineButton(
-                                    label: 'Home',
-                                    onPressed: () => navigateToHome(context),
-                                    active: true,
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Builder(builder: (buttonContext) {
-                                    return HoverUnderlineButton(
-                                      label: 'Shop ▾',
-                                      onPressed: () => showShopCategories(context, buttonContext),
-                                      active: false,
-                                    );
-                                  }),
-                                  const SizedBox(width: 16),
-                                  Builder(builder: (buttonContext) {
-                                    return HoverUnderlineButton(
-                                      label: 'The Print Shack ▾',
-                                      onPressed: () => showPrintShackMenu(context, buttonContext),
-                                      active: false,
-                                    );
-                                  }),
-                                  const SizedBox(width: 16),
-                                  HoverUnderlineButton(
-                                    label: 'SALE!',
-                                    onPressed: () => Navigator.pushNamed(context, '/sale'), // UPDATE THIS
-                                    active: false,
-                                  ),
-                                  const SizedBox(width: 16),
-                                  HoverUnderlineButton(
-                                    label: 'About',
-                                    onPressed: () => Navigator.pushNamed(context, '/about'),
-                                    active: false,
-                                  ),
-                                ],
-                              );
-                            } else {
-                              // mobile: single hamburger that opens a full menu (includes shop categories & print shack)
-                              return IconButton(
-                                icon: const Icon(Icons.menu),
-                                onPressed: () => showMobileMenu(context),
-                              );
-                            }
-                          }),
-
-                          const Spacer(),
-                          // right-side icons -- keep on all sizes
-                          ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 600),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.search, size: 18, color: Colors.grey),
-                                  padding: const EdgeInsets.all(8),
-                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                                  onPressed: placeholderCallbackForButtons,
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.person_outline, size: 18, color: Colors.grey),
-                                  padding: const EdgeInsets.all(8),
-                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                                  onPressed: () => Navigator.pushNamed(context, '/auth'), // UPDATE THIS LINE
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.shopping_bag_outlined, size: 18, color: Colors.grey),
-                                  padding: const EdgeInsets.all(8),
-                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                                  onPressed: placeholderCallbackForButtons,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+  Widget _buildHeroSection(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 500,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: const AssetImage('assets/images/tshirt.jpg'),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+            Colors.black.withValues(alpha: 0.4),
+            BlendMode.darken,
+          ),
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Essential Range - Over 20% OFF!',
+              style: TextStyle(
+                fontSize: 56,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                letterSpacing: 1.2,
               ),
+              textAlign: TextAlign.center,
             ),
-
-            // Hero Section
-            SizedBox(
-              height: 400,
-              width: double.infinity,
-              child: Stack(
-                children: [
-                  // Background image
-                  Positioned.fill(
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(
-                            'assets/images/zip_up_hoodie.png',
-                          ),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black.withAlpha((0.7 * 255).round()),
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Content overlay
-                  Positioned(
-                    left: 24,
-                    right: 24,
-                    top: 80,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'ESSENTIAL RANGE - OVER 20% OFF',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            height: 1.2,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          "Over 20% off our Essential Range. Come and grab yours while stock lasts!",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            height: 1.5,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 32),
-                        ElevatedButton(
-                          onPressed: () => Navigator.pushNamed(context, '/product'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF4d2963),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.zero,
-                            ),
-                          ),
-                          child: const Text(
-                            'BROWSE COLLECTION',
-                            style: TextStyle(fontSize: 16, letterSpacing: 1.2, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+            const SizedBox(height: 20),
+            const Text(
+              'Over 20% off our Essential Range. Come and grab yours while stock lasts!',
+              style: TextStyle(
+                fontSize: 22,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
               ),
+              textAlign: TextAlign.center,
             ),
-
-            // Products Section
-            Container(
-              color: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.all(40.0),
-                child: Column(
-                  children: [
-                    const Text(
-                      'ESSENTIAL RANGE - OVER 20% OFF!',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    // Essential Range Items - Navigate to /essential-range
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isWide = constraints.maxWidth > 640;
-                        return isWide
-                            ? Row(
-                                children: [
-                                  Expanded(
-                                    child: HoverUnderlineImageTile(
-                                      label: 'Limited Edition Essential Zip Hoodies',
-                                      imageUrl: 'assets/images/zip_up_hoodie.png',
-                                      oldPrice: '£20.00',
-                                      newPrice: '£14.99',
-                                      onTap: () => Navigator.pushNamed(context, '/essential-range'),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 32),
-                                  Expanded(
-                                    child: HoverUnderlineImageTile(
-                                      label: 'Essential T-Shirt',
-                                      imageUrl: 'assets/images/limited_t_shirt.png',
-                                      oldPrice: '£10.00',
-                                      newPrice: '£6.99',
-                                      onTap: () => Navigator.pushNamed(context, '/essential-range'),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : Column(
-                                children: [
-                                  HoverUnderlineImageTile(
-                                    label: 'Limited Edition Essential Zip Hoodies',
-                                    imageUrl: 'assets/images/zip_up_hoodie.png',
-                                    oldPrice: '£20.00',
-                                    newPrice: '£14.99',
-                                    onTap: () => Navigator.pushNamed(context, '/essential-range'),
-                                  ),
-                                  const SizedBox(height: 24),
-                                  HoverUnderlineImageTile(
-                                    label: 'Essential T-Shirt',
-                                    imageUrl: 'assets/images/limited_t_shirt.png',
-                                    oldPrice: '£10.00',
-                                    newPrice: '£6.99',
-                                    onTap: () => Navigator.pushNamed(context, '/essential-range'),
-                                  ),
-                                ],
-                              );
-                      },
-                    ),
-
-                    // Signature Range
-                    const SizedBox(height: 32),
-                    const Text(
-                      'Signature Range',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isWide = constraints.maxWidth > 640;
-                        return isWide
-                            ? Row(
-                                children: [
-                                  Expanded(
-                                    child: HoverUnderlineImageTile(
-                                      label: 'Signature Hoodie',
-                                      imageUrl: 'assets/images/zip_up_hoodie.png',
-                                      newPrice: '£32.99',
-                                      onTap: () => Navigator.pushNamed(context, '/product'),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 32),
-                                  Expanded(
-                                    child: HoverUnderlineImageTile(
-                                      label: 'Signature T-Shirt',
-                                      imageUrl: 'assets/images/signature_t_shirt.png',
-                                      newPrice: '£14.99',
-                                      onTap: () => Navigator.pushNamed(context, '/product'),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : Column(
-                                children: [
-                                  HoverUnderlineImageTile(
-                                    label: 'Signature Hoodie',
-                                    imageUrl: 'assets/images/zip_up_hoodie.png',
-                                    newPrice: '£32.99',
-                                    onTap: () => Navigator.pushNamed(context, '/product'),
-                                  ),
-                                  const SizedBox(height: 24),
-                                  HoverUnderlineImageTile(
-                                    label: 'Signature T-Shirt',
-                                    imageUrl: 'assets/images/signature_t_shirt.png',
-                                    newPrice: '£14.99',
-                                    onTap: () => Navigator.pushNamed(context, '/product'),
-                                  ),
-                                ],
-                              );
-                      },
-                    ),
-
-                    // Portsmouth City Collection
-                    const SizedBox(height: 48),
-                    const Text(
-                      'Portsmouth City Collection',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    GridView.count(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisCount: MediaQuery.of(context).size.width > 600 ? 2 : 1,
-                      crossAxisSpacing: 24,
-                      mainAxisSpacing: 48,
-                      childAspectRatio: 0.8, // Fixed: prevents overflow
-                      children: const [
-                        ProductCard(
-                          title: 'Portsmouth City Hoodie',
-                          price: '£29.99',
-                          imageUrl: 'assets/images/zip_up_hoodie.png',
-                        ),
-                        ProductCard(
-                          title: 'Portsmouth City T-Shirt',
-                          price: '£12.99',
-                          imageUrl: 'assets/images/zip_up_hoodie.png',
-                        ),
-                        ProductCard(
-                          title: 'Portsmouth City Cap',
-                          price: '£9.99',
-                          imageUrl: 'assets/images/zip_up_hoodie.png',
-                        ),
-                        ProductCard(
-                          title: 'Portsmouth City Tote Bag',
-                          price: '£7.99',
-                          imageUrl: 'assets/images/zip_up_hoodie.png',
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-                    ElevatedButton(
-                      onPressed: () => Navigator.pushNamed(context, '/collection'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4d2963),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.zero,
-                        ),
-                      ),
-                      child: const Text(
-                        'VIEW ALL',
-                        style: TextStyle(fontSize: 16, letterSpacing: 1.2, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
+            const SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/essential-range'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF4d2963),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 20),
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.5,
                 ),
               ),
-            ),
-
-            // Footer (fixed: non-const Row and concrete placeholders)
-            Column(
-              children: [
-                // Upper footer (columns, newsletter, etc.)
-                Container(
-                  width: double.infinity,
-                  color: Colors.grey[50],
-                  padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      if (constraints.maxWidth > 800) {
-                        // Desktop: 3 columns
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Opening Hours', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                                  SizedBox(height: 12),
-                                  Text(
-                                    '''❄️ Winter Break Closure Dates ❄️
-
-Closing 4pm 19/12/2025
-
-Reopening 10am 05/01/2026
-
-Last post date: 12pm on 18/12/2025
-------------------------
-(Term Time)
-
-Monday - Friday 10am - 4pm
-
-(Outside of Term Time)
-Monday - Friday 10am - 3pm
-
-Purchase online 24/7''',
-                                    style: TextStyle(fontSize: 14),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 32),
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Help and Information',
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                                  SizedBox(height: 12),
-                                  Text('Search'),
-                                  SizedBox(height: 6),
-                                  Text('Terms & Conditions'),
-                                  SizedBox(height: 6),
-                                  Text('Privacy Policy'),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 32),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('Latest Offers',
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                                  const SizedBox(height: 12),
-                                  // simple email input + subscribe button visual
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          height: 40,
-                                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            border: Border.all(color: Colors.grey.shade300),
-                                          ),
-                                          child: const Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text('Email address', style: TextStyle(color: Colors.black54)),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Container(
-                                        height: 40,
-                                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                                        color: const Color(0xFF4d2963),
-                                        alignment: Alignment.center,
-                                        child: const Text(
-                                          'SUBSCRIBE',
-                                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        );
-                      } else {
-                        // Mobile: stacked
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('Opening Hours', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                            const SizedBox(height: 12),
-                            const Text(
-                              '''❄️ Winter Break Closure Dates ❄️
-
-Closing 4pm 19/12/2025
-
-Reopening 10am 05/01/2026''',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            const SizedBox(height: 24),
-                            const Text('Help and Information',
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                            const SizedBox(height: 12),
-                            const Text('Search'),
-                            const SizedBox(height: 6),
-                            const Text('Terms & Conditions'),
-                            const SizedBox(height: 24),
-                            const Text('Latest Offers', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                            const SizedBox(height: 12),
-                            const TextField(
-                              decoration: InputDecoration(
-                                hintText: 'Email address',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.zero,
-                                ),
-                                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                                filled: true,
-                                fillColor: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF4d2963),
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.zero,
-                                  ),
-                                ),
-                                child: const Text('Subscribe'),
-                              ),
-                            ),
-                          ],
-                        );
-                      }
-                    },
-                  ),
-                ),
-
-                // Divider between sections
-                const Divider(height: 1),
-
-                // Lower sub-footer (icons + payment badges + copyright)
-                Container(
-                  width: double.infinity,
-                  color: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 36,
-                            height: 36,
-                            color: Colors.grey.shade200,
-                            child: const Icon(Icons.facebook, size: 18),
-                          ),
-                          const SizedBox(width: 12),
-                          Container(
-                            width: 36,
-                            height: 36,
-                            color: Colors.grey.shade200,
-                            child: const Icon(Icons.share, size: 18),
-                          ),
-                        ],
-                      ),
-
-                      const Text('© 2025, upsu-store'),
-                    ],
-                  ),
-                ),
-              ],
+              child: const Text('BROWSE COLLECTION'),
             ),
           ],
         ),
       ),
     );
   }
-}
 
-class ProductCard extends StatelessWidget {
-  final String title;
-  final String price;
-  final String imageUrl;
-
-  const ProductCard({
-    super.key,
-    required this.title,
-    required this.price,
-    required this.imageUrl,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, '/product-detail');
-      },
+  Widget _buildEssentialRange(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 80),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Image.asset(
-              imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: Colors.grey[300],
-                  child: const Center(
-                    child: Icon(Icons.image_not_supported, color: Colors.grey),
-                  ),
-                );
-              },
+          const Text(
+            'ESSENTIAL RANGE - OVER 20% OFF!',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.5,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: const TextStyle(fontSize: 14, color: Colors.black),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            price,
-            style: const TextStyle(fontSize: 13, color: Colors.grey),
+          const SizedBox(height: 40),
+          Row(
+            children: [
+              Expanded(
+                child: _buildProductCard(
+                  context,
+                  'Limited Edition Essential Zip Hoodies',
+                  '£20.00',
+                  '£14.99',
+                  'assets/images/hoodie.jpg',
+                ),
+              ),
+              const SizedBox(width: 30),
+              Expanded(
+                child: _buildProductCard(
+                  context,
+                  'Essential T-Shirt',
+                  '£10.00',
+                  '£6.99',
+                  'assets/images/tshirt.jpg',
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-}
 
-class HoverUnderlineButton extends StatefulWidget {
-  final String label;
-  final VoidCallback onPressed;
-  final bool active;
-
-  const HoverUnderlineButton({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.active = false,
-  });
-
-  @override
-  State<HoverUnderlineButton> createState() => _HoverUnderlineButtonState();
-}
-
-class _HoverUnderlineButtonState extends State<HoverUnderlineButton> {
-  bool _hovering = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final bool showUnderline = _hovering || widget.active;
-    final underlineColor = showUnderline ? const Color(0xFF4d2963) : Colors.transparent;
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovering = true),
-      onExit: (_) => setState(() => _hovering = false),
-      child: GestureDetector(
-        onTap: widget.onPressed,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: underlineColor, width: 2),
+  Widget _buildSignatureRange(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 80),
+      child: Column(
+        children: [
+          const Text(
+            'SIGNATURE RANGE',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.5,
             ),
           ),
-          child: Text(
-            widget.label,
-            style: const TextStyle(
-              fontFamily: 'Roboto',
-              fontSize: 14,
-              fontWeight: FontWeight.normal,
-              letterSpacing: 0.8,
-              color: Colors.black,
-            ),
+          const SizedBox(height: 40),
+          Row(
+            children: [
+              Expanded(
+                child: _buildProductCard(
+                  context,
+                  'Signature Hoodie',
+                  '£25.00',
+                  '£25.00',
+                  'assets/images/hoodie.jpg',
+                ),
+              ),
+              const SizedBox(width: 30),
+              Expanded(
+                child: _buildProductCard(
+                  context,
+                  'Signature T-Shirt',
+                  '£12.00',
+                  '£12.00',
+                  'assets/images/tshirt.jpg',
+                ),
+              ),
+            ],
           ),
-        ),
+        ],
       ),
     );
   }
-}
 
-class HoverUnderlineImageTile extends StatefulWidget {
-  final String label;
-  final String imageUrl;
-  final VoidCallback onTap;
-  final String? oldPrice;
-  final String? newPrice;
+  Widget _buildPortsmouthCityCollection(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 80),
+      child: Column(
+        children: [
+          const Text(
+            'PORTSMOUTH CITY COLLECTION',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 40),
+          Row(
+            children: [
+              Expanded(
+                child: _buildProductCard(
+                  context,
+                  'Portsmouth Hoodie',
+                  '£22.00',
+                  '£22.00',
+                  'assets/images/hoodie.jpg',
+                ),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: _buildProductCard(
+                  context,
+                  'Portsmouth T-Shirt',
+                  '£11.00',
+                  '£11.00',
+                  'assets/images/tshirt.jpg',
+                ),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: _buildProductCard(
+                  context,
+                  'Portsmouth Sweatshirt',
+                  '£20.00',
+                  '£20.00',
+                  'assets/images/hoodie.jpg',
+                ),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: _buildProductCard(
+                  context,
+                  'Portsmouth Cap',
+                  '£8.00',
+                  '£8.00',
+                  'assets/images/tshirt.jpg',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 30),
+          ElevatedButton(
+            onPressed: () => Navigator.pushNamed(context, '/collections'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4d2963),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+              textStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
+            child: const Text('VIEW ALL'),
+          ),
+        ],
+      ),
+    );
+  }
 
-  const HoverUnderlineImageTile({
-    super.key,
-    required this.label,
-    required this.imageUrl,
-    required this.onTap,
-    this.oldPrice,
-    this.newPrice,
-  });
+  Widget _buildProductCard(
+    BuildContext context,
+    String title,
+    String originalPrice,
+    String salePrice,
+    String imagePath,
+  ) {
+    final bool isOnSale = originalPrice != salePrice;
 
-  @override
-  State<HoverUnderlineImageTile> createState() => _HoverUnderlineImageTileState();
-}
-
-class _HoverUnderlineImageTileState extends State<HoverUnderlineImageTile> {
-  bool _hovering = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final underlineColor = _hovering ? const Color(0xFF4d2963) : Colors.transparent;
-
-    // choose AssetImage for local assets, NetworkImage otherwise
-    final ImageProvider<Object> imageProvider = widget.imageUrl.startsWith('assets/')
-        ? AssetImage(widget.imageUrl) as ImageProvider<Object>
-        : NetworkImage(widget.imageUrl) as ImageProvider<Object>;
-
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovering = true),
-      onExit: (_) => setState(() => _hovering = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, '/product-detail'),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withValues(alpha: 0.1),
+              spreadRadius: 1,
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AspectRatio(
-              aspectRatio: 16 / 9,
-              // Use a Stack: static Image + animated overlay for brightness (no AnimatedContainer on decoration)
-              child: ClipRect(
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image(
-                      image: imageProvider,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey[200],
-                          child: const Center(
-                            child: Icon(Icons.image_not_supported, color: Colors.grey),
-                          ),
-                        );
-                      },
-                    ),
-                    // Brighten overlay on hover using AnimatedOpacity (smooth, doesn't rebuild image)
-                    AnimatedOpacity(
-                      duration: const Duration(milliseconds: 150),
-                      opacity: _hovering ? 0.18 : 0.0,
-                      child: Container(color: Colors.white),
-                    ),
-                  ],
+              aspectRatio: 1,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: Colors.grey[300],
+                      child: const Center(
+                        child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
-            const SizedBox(height: 12),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: underlineColor, width: 2),
-                ),
-              ),
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text(
-                widget.label,
-                style: const TextStyle(
-                  fontFamily: 'Roboto',
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                  letterSpacing: 0.8,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            // Price rendering: supports (old + new) or single price (newPrice)
-            if (widget.newPrice != null && widget.oldPrice != null) ...[
-              const SizedBox(height: 6),
-              Row(
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.oldPrice!,
+                    title,
                     style: const TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 15,
-                      color: Colors.grey,
-                      decoration: TextDecoration.lineThrough,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    widget.newPrice!,
-                    style: const TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4d2963),
-                    ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      if (isOnSale)
+                        Text(
+                          originalPrice,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                        ),
+                      if (isOnSale) const SizedBox(width: 8),
+                      Text(
+                        salePrice,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: isOnSale ? const Color(0xFF4d2963) : Colors.black87,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ] else if (widget.newPrice != null) ...[
-              const SizedBox(height: 6),
-              Text(
-                widget.newPrice!,
-                style: const TextStyle(
-                  fontFamily: 'Roboto',
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF4d2963),
-                ),
-              ),
-            ],
+            ),
           ],
         ),
       ),

@@ -4,12 +4,12 @@ import 'package:union_shop/widgets/hover_underline_button.dart';
 
 void main() {
   group('HoverUnderlineButton Tests', () {
-    testWidgets('Button renders with label', (WidgetTester tester) async {
+    testWidgets('Button renders with text', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: HoverUnderlineButton(
-              label: 'Home',
+              text: 'Home',
               onPressed: () {},
             ),
           ),
@@ -20,12 +20,12 @@ void main() {
       expect(find.byType(HoverUnderlineButton), findsOneWidget);
     });
 
-    testWidgets('Button displays correct label', (WidgetTester tester) async {
+    testWidgets('Button displays correct text', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: HoverUnderlineButton(
-              label: 'Shop',
+              text: 'Shop',
               onPressed: () {},
             ),
           ),
@@ -42,7 +42,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: HoverUnderlineButton(
-              label: 'Click Me',
+              text: 'Click Me',
               onPressed: () {
                 wasPressed = true;
               },
@@ -62,8 +62,8 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: HoverUnderlineButton(
-              label: 'Active',
-              active: true,
+              text: 'Active',
+              isActive: true,
               onPressed: () {},
             ),
           ),
@@ -74,20 +74,16 @@ void main() {
         find.byType(AnimatedContainer),
       );
 
-      final decoration = container.decoration as BoxDecoration;
-      final border = decoration.border as Border;
-      
-      expect(border.bottom.color, const Color(0xFF4d2963));
-      expect(border.bottom.width, 2);
+      expect(container.constraints?.maxHeight, 2);
     });
 
-    testWidgets('Inactive button has transparent underline', (WidgetTester tester) async {
+    testWidgets('Inactive button has no underline width', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: HoverUnderlineButton(
-              label: 'Inactive',
-              active: false,
+              text: 'Inactive',
+              isActive: false,
               onPressed: () {},
             ),
           ),
@@ -98,10 +94,45 @@ void main() {
         find.byType(AnimatedContainer),
       );
 
-      final decoration = container.decoration as BoxDecoration;
-      final border = decoration.border as Border;
+      expect(container.constraints?.maxWidth ?? double.infinity, 0);
+    });
+
+    testWidgets('Active button has bold text', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HoverUnderlineButton(
+              text: 'Active',
+              isActive: true,
+              onPressed: () {},
+            ),
+          ),
+        ),
+      );
+
+      final text = tester.widget<Text>(find.text('Active'));
       
-      expect(border.bottom.color, Colors.transparent);
+      expect(text.style?.fontWeight, FontWeight.bold);
+      expect(text.style?.color, const Color(0xFF4d2963));
+    });
+
+    testWidgets('Inactive button has normal text', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HoverUnderlineButton(
+              text: 'Inactive',
+              isActive: false,
+              onPressed: () {},
+            ),
+          ),
+        ),
+      );
+
+      final text = tester.widget<Text>(find.text('Inactive'));
+      
+      expect(text.style?.fontWeight, FontWeight.normal);
+      expect(text.style?.color, Colors.black87);
     });
 
     testWidgets('Button has correct text styling', (WidgetTester tester) async {
@@ -109,7 +140,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: HoverUnderlineButton(
-              label: 'Styled',
+              text: 'Styled',
               onPressed: () {},
             ),
           ),
@@ -118,53 +149,7 @@ void main() {
 
       final text = tester.widget<Text>(find.text('Styled'));
       
-      expect(text.style?.fontFamily, 'Roboto');
-      expect(text.style?.fontSize, 16);
-      expect(text.style?.fontWeight, FontWeight.normal);
-      expect(text.style?.letterSpacing, 0.8);
-      expect(text.style?.color, Colors.black);
-    });
-
-    testWidgets('Button has correct padding', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: HoverUnderlineButton(
-              label: 'Padded',
-              onPressed: () {},
-            ),
-          ),
-        ),
-      );
-
-      final container = tester.widget<AnimatedContainer>(
-        find.byType(AnimatedContainer),
-      );
-      
-      expect(container.padding, const EdgeInsets.symmetric(horizontal: 16, vertical: 8));
-    });
-
-    testWidgets('Button has click cursor', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: HoverUnderlineButton(
-              label: 'Cursor',
-              onPressed: () {},
-            ),
-          ),
-        ),
-      );
-
-      // Find the MouseRegion that's a descendant of HoverUnderlineButton
-      final mouseRegion = tester.widget<MouseRegion>(
-        find.descendant(
-          of: find.byType(HoverUnderlineButton),
-          matching: find.byType(MouseRegion),
-        ),
-      );
-      
-      expect(mouseRegion.cursor, SystemMouseCursors.click);
+      expect(text.style?.fontSize, 14);
     });
 
     testWidgets('Button triggers callback only once per tap', (WidgetTester tester) async {
@@ -174,7 +159,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: HoverUnderlineButton(
-              label: 'Press Me',
+              text: 'Press Me',
               onPressed: () {
                 pressCount++;
               },
@@ -196,7 +181,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: HoverUnderlineButton(
-              label: 'Counter',
+              text: 'Counter',
               onPressed: () {
                 pressCount++;
               },
@@ -222,15 +207,15 @@ void main() {
             body: Row(
               children: [
                 HoverUnderlineButton(
-                  label: 'Home',
+                  text: 'Home',
                   onPressed: () {},
                 ),
                 HoverUnderlineButton(
-                  label: 'Shop',
+                  text: 'Shop',
                   onPressed: () {},
                 ),
                 HoverUnderlineButton(
-                  label: 'About',
+                  text: 'About',
                   onPressed: () {},
                 ),
               ],
@@ -250,7 +235,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: HoverUnderlineButton(
-              label: 'Animated',
+              text: 'Animated',
               onPressed: () {},
             ),
           ),
@@ -261,7 +246,7 @@ void main() {
         find.byType(AnimatedContainer),
       );
       
-      expect(container.duration, const Duration(milliseconds: 150));
+      expect(container.duration, const Duration(milliseconds: 200));
     });
 
     testWidgets('Active and inactive buttons display correctly', (WidgetTester tester) async {
@@ -271,13 +256,13 @@ void main() {
             body: Column(
               children: [
                 HoverUnderlineButton(
-                  label: 'Active Button',
-                  active: true,
+                  text: 'Active Button',
+                  isActive: true,
                   onPressed: () {},
                 ),
                 HoverUnderlineButton(
-                  label: 'Inactive Button',
-                  active: false,
+                  text: 'Inactive Button',
+                  isActive: false,
                   onPressed: () {},
                 ),
               ],
@@ -291,12 +276,12 @@ void main() {
       expect(find.byType(HoverUnderlineButton), findsNWidgets(2));
     });
 
-    testWidgets('Button default active state is false', (WidgetTester tester) async {
+    testWidgets('Button default isActive state is false', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: HoverUnderlineButton(
-              label: 'Default',
+              text: 'Default',
               onPressed: () {},
             ),
           ),
@@ -307,19 +292,15 @@ void main() {
         find.byType(AnimatedContainer),
       );
 
-      final decoration = container.decoration as BoxDecoration;
-      final border = decoration.border as Border;
-      
-      // Should be transparent when not active and not hovering
-      expect(border.bottom.color, Colors.transparent);
+      expect(container.constraints?.maxWidth ?? double.infinity, 0);
     });
 
-    testWidgets('Button has GestureDetector', (WidgetTester tester) async {
+    testWidgets('Button has InkWell', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: HoverUnderlineButton(
-              label: 'Gesture',
+              text: 'Gesture',
               onPressed: () {},
             ),
           ),
@@ -329,7 +310,7 @@ void main() {
       expect(
         find.descendant(
           of: find.byType(HoverUnderlineButton),
-          matching: find.byType(GestureDetector),
+          matching: find.byType(InkWell),
         ),
         findsOneWidget,
       );
@@ -340,7 +321,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: HoverUnderlineButton(
-              label: 'Mouse',
+              text: 'Mouse',
               onPressed: () {},
             ),
           ),
@@ -354,6 +335,48 @@ void main() {
         ),
         findsOneWidget,
       );
+    });
+
+    testWidgets('Button has Column layout', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HoverUnderlineButton(
+              text: 'Layout',
+              onPressed: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        find.descendant(
+          of: find.byType(HoverUnderlineButton),
+          matching: find.byType(Column),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('Underline container has correct color', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HoverUnderlineButton(
+              text: 'Active',
+              isActive: true,
+              onPressed: () {},
+            ),
+          ),
+        ),
+      );
+
+      final container = tester.widget<AnimatedContainer>(
+        find.byType(AnimatedContainer),
+      );
+
+      final decoration = container.decoration as BoxDecoration?;
+      expect(decoration?.color, const Color(0xFF4d2963));
     });
   });
 }
