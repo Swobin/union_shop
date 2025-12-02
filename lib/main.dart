@@ -211,7 +211,7 @@ class HomeScreen extends StatelessWidget {
                     title: const Text('SALE!'),
                     onTap: () {
                       Navigator.pop(ctx);
-                      // Navigate to sale page or implement later
+                      Navigator.pushNamed(context, '/sale');
                     },
                   ),
 
@@ -338,7 +338,7 @@ class HomeScreen extends StatelessWidget {
                                   const SizedBox(width: 16),
                                   HoverUnderlineButton(
                                     label: 'SALE!',
-                                    onPressed: placeholderCallbackForButtons,
+                                    onPressed: () => Navigator.pushNamed(context, '/sale'), // UPDATE THIS
                                     active: false,
                                   ),
                                   const SizedBox(width: 16),
